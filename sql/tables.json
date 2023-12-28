@@ -1,0 +1,175 @@
+[
+	{
+		"name": "w8y_wikis",
+		"columns": [
+			{
+				"name": "w8y_wi_page_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{ 
+				"name": "w8y_wi_api_url",
+				"type": "blob",
+				"options": { "notnull": true, "length": 65530 }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"w8y_wi_page_id"
+		]
+	},
+	{
+		"name": "w8y_scrape_records",
+		"columns": [
+			{
+				"name": "w8y_sr_sr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "w8y_sr_vr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": false }
+			},
+			{
+				"name": "w8y_sr_page_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{ 
+				"name": "w8y_sr_api_url",
+				"type": "blob",
+				"options": { "notnull": true, "length": 65530 }
+			},
+			{
+				"name": "w8y_sr_timestamp",
+				"type": "mwtimestamp",
+				"options": { "notnull": true }
+			},
+			{
+				"name": "w8y_sr_is_alive",
+				"type": "mwtinyint",
+				"options": { "notnull": true, "length": 1 }
+			},
+			{
+				"name": "w8y_sr_mw_version",
+				"type": "binary",
+				"options": { "notnull": true, "length": 255 }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"w8y_sr_sr_id"
+		]
+	},
+	{
+		"name": "w8y_version_records",
+		"columns": [
+			{
+				"name": "w8y_vr_vr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"w8y_vr_vr_id"
+		]
+	},
+	{
+		"name": "w8y_extensions",
+		"columns": [
+			{
+				"name": "w8y_ex_vr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "w8y_ex_name",
+				"type": "binary",
+				"options": { "notnull": true, "length": 255 }
+			},
+			{
+				"name": "w8y_ex_version",
+				"type": "binary",
+				"options": { "notnull": true, "length": 255 }
+			},
+			{ 
+				"name": "w8y_ex_doc_url",
+				"type": "blob",
+				"options": { "notnull": true, "length": 65530 }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"w8y_ex_vr_id", "w8y_ex_name"
+		]
+	},
+	{
+		"name": "w8y_skins",
+		"columns": [
+			{
+				"name": "w8y_sk_vr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "w8y_sk_name",
+				"type": "binary",
+				"options": { "notnull": true, "length": 255 }
+			},
+			{
+				"name": "w8y_sk_version",
+				"type": "binary",
+				"options": { "notnull": true, "length": 255 }
+			},
+			{ 
+				"name": "w8y_sk_doc_url",
+				"type": "blob",
+				"options": { "notnull": true, "length": 65530 }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"w8y_sk_vr_id", "w8y_sk_name"
+		]
+	},
+	{
+		"name": "w8y_mw_statistics",
+		"columns": [
+			{
+				"name": "w8y_mws_sr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{ 
+				"name": "w8y_mws_statistics",
+				"type": "blob",
+				"options": { "notnull": true, "length": 65530 }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"w8y_mws_sr_id"
+		]
+	},
+	{
+		"name": "w8y_smw_statistics",
+		"columns": [
+			{
+				"name": "w8y_smws_sr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{ 
+				"name": "w8y_smws_statistics",
+				"type": "blob",
+				"options": { "notnull": true, "length": 65530 }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"w8y_smws_sr_id"
+		]
+	}
+]

@@ -1,0 +1,31 @@
+{
+	"name": "WikiApiary",
+	"version": "0.1.0",
+	"author": [
+		"[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:WikiApiary",
+	"descriptionmsg": "wikiapiary-desc",
+	"manifest_version": 2,
+	"type": "parserhook",
+	"license-name": "MIT",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"MessagesDirs": {
+		"WikiApiary": [
+			"i18n"
+		]
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\WikiApiary\\": "includes/"
+	},
+	"HookHandlers": {
+		"dbhooks": {
+			"class": "MediaWiki\\Extension\\WikiApiary\\DBHooks"
+		}
+	},
+	"Hooks": {
+		"LoadExtensionSchemaUpdates": "dbhooks"
+	}
+}
