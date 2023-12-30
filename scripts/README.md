@@ -36,6 +36,6 @@ WIKIAPIARY_DB_SCHEMA
 ```
 
 ## See also
-[Pywikibot documentation](https://doc.wikimedia.org/pywikibot/stable/)
-[mwparserfromhell](https://github.com/earwig/mwparserfromhell/)
-[SQLAlchemy](https://docs.sqlalchemy.org)
+- [Pywikibot documentation](https://doc.wikimedia.org/pywikibot/stable/)
+- [mwparserfromhell](https://github.com/earwig/mwparserfromhell/)
+- [SQLAlchemy](https://docs.sqlalchemy.org)
