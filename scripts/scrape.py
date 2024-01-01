@@ -1,15 +1,19 @@
 from pywikibot import Site, Category
 from pywikibot.pagegenerators import CategorizedPageGenerator
 from sqlalchemy.orm import sessionmaker
-from models import engine, ScrapeRecord
 import mwparserfromhell
 import requests
 import time
+import sys
+sys.path.append('./lib')
+from models import engine, ScrapeRecord
+from scraper import Scraper
 
-class Scraper:
+class Scrape:
 
 	site = None
 	session = None
+	scraper = Scraper()
 
 	def __init__(self):
 		self.site = Site()
@@ -28,40 +32,11 @@ class Scraper:
 				return str(template.get('url').value)
 		return None
 
-	def get_siteinfo(self, url):
-		query = [
-			'?action=query',
-			'&meta=siteinfo',
-			'&siprop=statistics|extensions|skins',
-			'&format=json'
-		]
-		try:
-			response = requests.get(url + "".join(query))
-			if response.status_code == 200:
-				return response.json()
-			else:
-				print(f"Request failed with status code: {response.status_code}")
-				return None
-		except requests.RequestException as e:
-			print(f"Request exception: {e}")
-			return None
-
 	def scrape_site(self, page):
 		url = self.get_url_from_page(page)
 		if url != None:
 			print(url)
-			json_data = self.get_siteinfo(url)
-			if json_data:
-				print(json_data)
-			scrape = ScrapeRecord(
-				w8y_sr_page_id = page.pageid,
-				w8y_sr_api_url = bytes(url, 'utf8'),
-				w8y_sr_timestamp = b'7',
-				w8y_sr_is_alive = True,
-				w8y_sr_mw_version = b'1.39'
-			)
-			#FIXME: DB type needs to be updated
-			#w8y_sr_timestamp = time.time_ns(),
+			scrape = self.scraper.scrape_site(url, page.pageid)
 			self.session.add(scrape)
 			self.session.commit()
 
@@ -70,5 +45,5 @@ class Scraper:
 			self.scrape_site(page)
 
 if __name__ == '__main__':
-	scrape = Scraper()
+	scrape = Scrape()
 	scrape.main()
