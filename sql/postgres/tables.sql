@@ -12,11 +12,13 @@ CREATE TABLE w8y_wikis (
 
 CREATE TABLE w8y_scrape_records (
   w8y_sr_sr_id SERIAL NOT NULL,
-  w8y_sr_vr_id INT DEFAULT NULL,
   w8y_sr_page_id INT NOT NULL,
   w8y_sr_api_url VARCHAR(255) NOT NULL,
   w8y_sr_timestamp INT NOT NULL,
   w8y_sr_is_alive BOOLEAN NOT NULL,
+  w8y_sr_vr_id INT DEFAULT NULL,
+  w8y_sr_statistics TEXT DEFAULT NULL,
+  w8y_sr_smwstatistics TEXT DEFAULT NULL,
   w8y_sr_mw_version VARCHAR(255) NOT NULL,
   PRIMARY KEY(w8y_sr_sr_id)
 );
@@ -43,18 +45,4 @@ CREATE TABLE w8y_skins (
   w8y_sk_version VARCHAR(255) NOT NULL,
   w8y_sk_doc_url VARCHAR(255) NOT NULL,
   PRIMARY KEY(w8y_sk_vr_id, w8y_sk_name)
-);
-
-
-CREATE TABLE w8y_mw_statistics (
-  w8y_mws_sr_id INT NOT NULL,
-  w8y_mws_statistics TEXT NOT NULL,
-  PRIMARY KEY(w8y_mws_sr_id)
-);
-
-
-CREATE TABLE w8y_smw_statistics (
-  w8y_smws_sr_id INT NOT NULL,
-  w8y_smws_statistics TEXT NOT NULL,
-  PRIMARY KEY(w8y_smws_sr_id)
 );

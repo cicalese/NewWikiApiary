@@ -7,12 +7,12 @@
 				"type": "integer",
 				"options": { "unsigned": true, "notnull": true }
 			},
-			{ 
+			{
 				"name": "w8y_wi_api_url",
 				"type": "string",
 				"options": { "notnull": true }
 			},
-			{ 
+			{
 				"name": "w8y_wi_last_sr_id",
 				"type": "integer",
 				"options": { "unsigned": true, "notnull": false }
@@ -32,16 +32,11 @@
 				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
 			},
 			{
-				"name": "w8y_sr_vr_id",
-				"type": "integer",
-				"options": { "unsigned": true, "notnull": false }
-			},
-			{
 				"name": "w8y_sr_page_id",
 				"type": "integer",
 				"options": { "unsigned": true, "notnull": true }
 			},
-			{ 
+			{
 				"name": "w8y_sr_api_url",
 				"type": "string",
 				"options": { "notnull": true }
@@ -55,6 +50,21 @@
 				"name": "w8y_sr_is_alive",
 				"type": "boolean",
 				"options": { "notnull": true }
+			},
+			{
+				"name": "w8y_sr_vr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": false }
+			},
+			{
+				"name": "w8y_sr_statistics",
+				"type": "blob",
+				"options": { "length": 65530, "notnull": false }
+			},
+			{
+				"name": "w8y_sr_smwstatistics",
+				"type": "blob",
+				"options": { "length": 65530, "notnull": false }
 			},
 			{
 				"name": "w8y_sr_mw_version",
@@ -99,7 +109,7 @@
 				"type": "string",
 				"options": { "notnull": true }
 			},
-			{ 
+			{
 				"name": "w8y_ex_doc_url",
 				"type": "string",
 				"options": { "notnull": true }
@@ -128,7 +138,7 @@
 				"type": "string",
 				"options": { "notnull": true }
 			},
-			{ 
+			{
 				"name": "w8y_sk_doc_url",
 				"type": "string",
 				"options": { "notnull": true }
@@ -137,44 +147,6 @@
 		"indexes": [],
 		"pk": [
 			"w8y_sk_vr_id", "w8y_sk_name"
-		]
-	},
-	{
-		"name": "w8y_mw_statistics",
-		"columns": [
-			{
-				"name": "w8y_mws_sr_id",
-				"type": "integer",
-				"options": { "unsigned": true, "notnull": true }
-			},
-			{ 
-				"name": "w8y_mws_statistics",
-				"type": "blob",
-				"options": { "notnull": true, "length": 65530 }
-			}
-		],
-		"indexes": [],
-		"pk": [
-			"w8y_mws_sr_id"
-		]
-	},
-	{
-		"name": "w8y_smw_statistics",
-		"columns": [
-			{
-				"name": "w8y_smws_sr_id",
-				"type": "integer",
-				"options": { "unsigned": true, "notnull": true }
-			},
-			{ 
-				"name": "w8y_smws_statistics",
-				"type": "blob",
-				"options": { "notnull": true, "length": 65530 }
-			}
-		],
-		"indexes": [],
-		"pk": [
-			"w8y_smws_sr_id"
 		]
 	}
 ]

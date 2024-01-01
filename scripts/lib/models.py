@@ -28,9 +28,3 @@ class Extension(Base):
 
 class Skin(Base):
 	__table__ = Base.metadata.tables['w8y_skins']
-
-class MwStatistics(Base):
-	__table__ = Base.metadata.tables['w8y_mw_statistics']
-
-class SmwStatistics(Base):
-	__table__ = Base.metadata.tables['w8y_smw_statistics']
