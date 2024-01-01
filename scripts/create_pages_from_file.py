@@ -2,7 +2,6 @@ import requests
 import pywikibot
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from urllib.parse import urlparse
 import sys
 sys.path.append('./lib')
 from models import engine, Wiki
