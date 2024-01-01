@@ -11,8 +11,10 @@ def get_wikis():
 
 def scrape_site(scraper, wiki, session):
 	url = wiki.w8y_wi_api_url.decode('utf8')
+	page_id = wiki.w8y_wi_page_id
+	last_scrape_id = wiki.w8y_wi_last_sr_id
 	print(url)
-	scrape = scraper.scrape_site(url, wiki.w8y_wi_page_id)
+	scrape = scraper.scrape_site(url, page_id, last_scrape_id)
 	if scrape:
 		session.add(scrape)
 		session.commit()

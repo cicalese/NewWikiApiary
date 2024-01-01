@@ -52,9 +52,39 @@
 				"options": { "notnull": true }
 			},
 			{
-				"name": "w8y_sr_vr_id",
-				"type": "integer",
-				"options": { "unsigned": true, "notnull": false }
+				"name": "w8y_sr_mw_version",
+				"type": "string",
+				"options": { "notnull": false }
+			},
+			{
+				"name": "w8y_sr_db_version",
+				"type": "string",
+				"options": { "notnull": false }
+			},
+			{
+				"name": "w8y_sr_php_version",
+				"type": "string",
+				"options": { "notnull": false }
+			},
+			{
+				"name": "w8y_sr_logo",
+				"type": "string",
+				"options": { "notnull": false }
+			},
+			{
+				"name": "w8y_sr_favicon",
+				"type": "string",
+				"options": { "notnull": false }
+			},
+			{
+				"name": "w8y_sr_language",
+				"type": "string",
+				"options": { "notnull": false }
+			},
+			{
+				"name": "w8y_sr_general",
+				"type": "blob",
+				"options": { "length": 65530, "notnull": false }
 			},
 			{
 				"name": "w8y_sr_statistics",
@@ -62,9 +92,9 @@
 				"options": { "length": 65530, "notnull": false }
 			},
 			{
-				"name": "w8y_sr_mw_version",
-				"type": "string",
-				"options": { "notnull": false }
+				"name": "w8y_sr_vr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": false }
 			}
 		],
 		"indexes": [],

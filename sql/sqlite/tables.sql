@@ -16,9 +16,15 @@ CREATE TABLE /*_*/w8y_scrape_records (
   w8y_sr_api_url VARCHAR(255) NOT NULL,
   w8y_sr_timestamp INTEGER UNSIGNED NOT NULL,
   w8y_sr_is_alive BOOLEAN NOT NULL,
-  w8y_sr_vr_id INTEGER UNSIGNED DEFAULT NULL,
+  w8y_sr_mw_version VARCHAR(255) DEFAULT NULL,
+  w8y_sr_db_version VARCHAR(255) DEFAULT NULL,
+  w8y_sr_php_version VARCHAR(255) DEFAULT NULL,
+  w8y_sr_logo VARCHAR(255) DEFAULT NULL,
+  w8y_sr_favicon VARCHAR(255) DEFAULT NULL,
+  w8y_sr_language VARCHAR(255) DEFAULT NULL,
+  w8y_sr_general BLOB DEFAULT NULL,
   w8y_sr_statistics BLOB DEFAULT NULL,
-  w8y_sr_mw_version VARCHAR(255) DEFAULT NULL
+  w8y_sr_vr_id INTEGER UNSIGNED DEFAULT NULL
 );
 
 
