@@ -13,8 +13,9 @@ def scrape_site(scraper, wiki, session):
 	url = wiki.w8y_wi_api_url.decode('utf8')
 	print(url)
 	scrape = scraper.scrape_site(url, wiki.w8y_wi_page_id)
-	session.add(scrape)
-	session.commit()
+	if scrape:
+		session.add(scrape)
+		session.commit()
 
 with Session(engine) as session:
 	scraper = Scraper()
