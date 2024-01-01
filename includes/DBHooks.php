@@ -19,14 +19,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-namespace MediaWiki\Extension\WikiApiary;
+namespace WikiApiary;
 
 use DatabaseUpdater;
+use MediaWiki\Hook\ParserFirstCallInitHook;
 use MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook;
 
-class DBHooks implements
-	LoadExtensionSchemaUpdatesHook
-{
+class DBHooks implements LoadExtensionSchemaUpdatesHook, ParserFirstCallInitHook {
 	/**
 	 * Updates database schema.
 	 *
@@ -35,5 +34,45 @@ class DBHooks implements
 	public function onLoadExtensionSchemaUpdates( $updater ) {
 		$dir = __DIR__ . '/../sql/' . $updater->getDB()->getType();
 		$updater->addExtensionTable( 'w8y_wikis', $dir . '/tables.sql' );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function onParserFirstCallInit( $parser ): void {
+		$tagHooks = new TagHooks();
+		$parser->setFunctionHook(
+			'w8y',
+			[ $tagHooks, 'w8y' ]
+		);
+	}
+
+	/**
+	 * Converts an array of values in form [0] => "name=value" into a real associative array in form [name] => value.
+	 * If no "=" is provided, true is assumed like this: [name] => true.
+	 *
+	 * @param array string $options
+	 *
+	 * @return array $results
+	 */
+	private static function extractOptions( array $options ): array {
+		$results = [];
+
+		foreach ( $options as $option ) {
+			$pair = array_map( 'trim',
+							   explode( '=',
+										$option,
+										2 ) );
+
+			if ( count( $pair ) === 2 ) {
+				$results[$pair[0]] = $pair[1];
+			}
+
+			if ( count( $pair ) === 1 ) {
+				$results[$pair[0]] = true;
+			}
+		}
+
+		return $results;
 	}
 }
