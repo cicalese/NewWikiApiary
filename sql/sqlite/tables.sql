@@ -18,7 +18,6 @@ CREATE TABLE /*_*/w8y_scrape_records (
   w8y_sr_is_alive BOOLEAN NOT NULL,
   w8y_sr_vr_id INTEGER UNSIGNED DEFAULT NULL,
   w8y_sr_statistics BLOB DEFAULT NULL,
-  w8y_sr_smwstatistics BLOB DEFAULT NULL,
   w8y_sr_mw_version VARCHAR(255) DEFAULT NULL
 );
 

@@ -62,11 +62,6 @@
 				"options": { "length": 65530, "notnull": false }
 			},
 			{
-				"name": "w8y_sr_smwstatistics",
-				"type": "blob",
-				"options": { "length": 65530, "notnull": false }
-			},
-			{
 				"name": "w8y_sr_mw_version",
 				"type": "string",
 				"options": { "notnull": false }
