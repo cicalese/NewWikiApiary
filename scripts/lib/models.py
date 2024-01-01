@@ -2,11 +2,11 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
-username = os.environ.get('WIKIAPIARY_DB_USERNAME')
-password = os.environ.get('WIKIAPIARY_DB_PASSWORD')
-host = os.environ.get('WIKIAPIARY_DB_HOST')
-port = os.environ.get('WIKIAPIARY_DB_PORT', default='3306')
-db_schema = os.environ.get('WIKIAPIARY_DB_SCHEMA')
+username = os.environ['WIKIAPIARY_DB_USERNAME']
+password = os.environ['WIKIAPIARY_DB_PASSWORD']
+host = os.environ['WIKIAPIARY_DB_HOST']
+port = os.environ['WIKIAPIARY_DB_PORT']
+db_schema = os.environ['WIKIAPIARY_DB_SCHEMA']
 engine = create_engine(
 	f'mysql+pymysql://{username}:{password}@{host}:{port}/{db_schema}'
 )

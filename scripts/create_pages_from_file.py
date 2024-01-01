@@ -17,6 +17,7 @@ def get_sitename(url):
 	try:
 		response = requests.get(url + '?' + '&'.join(query))
 		if response.status_code == 200:
+			response.encoding = 'utf-8-sig'
 			data = response.json()
 			if 'query' in data:
 				query = data['query']
