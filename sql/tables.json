@@ -69,7 +69,7 @@
 			{
 				"name": "w8y_sr_mw_version",
 				"type": "string",
-				"options": { "notnull": true }
+				"options": { "notnull": false }
 			}
 		],
 		"indexes": [],

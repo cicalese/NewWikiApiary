@@ -19,7 +19,7 @@ CREATE TABLE w8y_scrape_records (
   w8y_sr_vr_id INT DEFAULT NULL,
   w8y_sr_statistics TEXT DEFAULT NULL,
   w8y_sr_smwstatistics TEXT DEFAULT NULL,
-  w8y_sr_mw_version VARCHAR(255) NOT NULL,
+  w8y_sr_mw_version VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY(w8y_sr_sr_id)
 );
 
