@@ -18,7 +18,7 @@
 		]
 	},
 	"ExtensionMessagesFiles": {
-		"WikiApiaryMagic": "WikiApiary.i18n.php"
+		"WikiApiaryMagic": "i18n/WikiApiary.i18n.php"
 	},
 	"AutoloadNamespaces": {
 		"WikiApiary\\": "includes/"
