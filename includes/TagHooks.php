@@ -12,9 +12,13 @@ namespace WikiApiary;
 
 use Parser;
 use WikiApiary\data\query\Query;
+use WikiApiary\data\ResponseHandler;
 
 class TagHooks {
 
+	/**
+	 * @var array
+	 */
 	private array $parameters;
 
 	/**
@@ -40,11 +44,16 @@ class TagHooks {
 				$result = print_r( $get, true ) . PHP_EOL;
 				$result .= print_r( $table, true ) . PHP_EOL;
 				$result .= print_r( $where, true ) . PHP_EOL;
+				$query->doQuery( $get, $table, $where );
 				break;
 			case "addToDB":
 				break;
 		}
-		return "<pre>" . $result . "</pre>";
+		if ( !empty( ResponseHandler::getMessages() ) ) {
+			return ResponseHandler::getMessages();
+		} else {
+			return "<pre>" . $result . "</pre>";
+		}
 	}
 
 	/**

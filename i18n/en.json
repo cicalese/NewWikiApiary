@@ -4,5 +4,7 @@
 			"Cindy Cicalese"
 		]
 	},
-	"wikiapiary-desc": "Database support for WikiApiary"
+	"wikiapiary-desc": "Database support for WikiApiary",
+	"w8y_not-a-valid-table" : "$1 is not a valid table.",
+	"w8y_not-a-valid-column" : "$1 is not a valid column in $2."
 }

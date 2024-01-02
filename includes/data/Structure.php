@@ -21,9 +21,11 @@ class Structure {
 	 *
 	 */
 	public function __construct() {
-		if ( file_exists( __DIR__ . '/../sql/tables.json' ) ) {
+		global $IP;
+		$jsonFile = $IP . '/extensions/WikiApiary/sql/tables.json';
+		if ( file_exists( $jsonFile ) ) {
 			$dbStructure = [];
-			$json = json_decode( file_get_contents( __DIR__ . '/../sql/tables.json' ), true );
+			$json = json_decode( file_get_contents( $jsonFile ), true );
 			foreach ( $json as $dbTable ) {
 				$name = $dbTable['name'];
 				foreach ( $dbTable['columns'] as $column ) {
@@ -31,6 +33,8 @@ class Structure {
 				}
 			}
 			$this->dbStructure = $dbStructure;
+		} else {
+			$this->dbStructure = [];
 		}
 	}
 
@@ -49,6 +53,9 @@ class Structure {
 	 */
 	public function columnExists( string $tableName, string $columnName ): bool {
 		if ( $this->tableExists( $tableName ) ) {
+//			echo "<pre>";
+//			var_dump( $tableName, $this->dbStructure[$tableName] );
+//			echo "</pre>";
 			return in_array( $columnName, $this->dbStructure[$tableName] );
 		}
 		return false;
