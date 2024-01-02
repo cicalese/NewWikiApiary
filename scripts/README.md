@@ -33,6 +33,11 @@ WIKIAPIARY_USERNAME
 WIKIAPIARY_URL
 ```
 
+## Scripts
+- `create_pages_from_file` reads the file urls.txt in the current directory; the file has one URL per line; it creates corresponding pages in the wiki
+- `sync_pages_to_db` creates Wiki records in the database corresponding to the pages that were created in the wiki
+- `scrape` scrapes the data for every row in Wikis and stores the data in the database
+
 ## See also
 - [Pywikibot documentation](https://doc.wikimedia.org/pywikibot/stable/)
 - [mwparserfromhell](https://github.com/earwig/mwparserfromhell/)

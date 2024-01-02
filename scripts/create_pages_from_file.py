@@ -66,7 +66,8 @@ try:
 						wiki = Wiki(
 							w8y_wi_page_id = page.pageid,
 							w8y_wi_api_url = bytes(url, 'utf8'),
-							w8y_wi_last_sr_id = None
+							w8y_wi_last_sr_id = None,
+							w8y_wi_is_defunct = False
 						)
 						session.add(wiki)
 					session.commit()
