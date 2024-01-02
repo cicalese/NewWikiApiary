@@ -126,7 +126,6 @@ def scrape_site(url, page_id, session):
 				w8y_sk_doc_url = skin['url']
 			)
 		)
-		print(skin)
 	for extension in versions['extensions']:
 		session.add(
 			Extension(
@@ -136,6 +135,5 @@ def scrape_site(url, page_id, session):
 				w8y_ex_doc_url = extension['url']
 			)
 		)
-		print(extension)
 
 	return sr_id

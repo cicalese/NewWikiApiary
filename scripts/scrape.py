@@ -6,7 +6,7 @@ from models import engine, Wiki
 from scraper import scrape_site
 
 def get_wikis():
-	stmt = select(Wiki)
+	stmt = select(Wiki).where(Wiki.w8y_wi_is_defunct == False)
 	return session.scalars(stmt)
 
 with Session(engine) as session:
