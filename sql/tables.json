@@ -18,7 +18,7 @@
 				"options": { "unsigned": true, "notnull": false }
 			},
 			{
-				"name": "w8y_sr_is_defunct",
+				"name": "w8y_wi_is_defunct",
 				"type": "boolean",
 				"options": { "notnull": true }
 			}

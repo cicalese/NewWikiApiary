@@ -10,6 +10,7 @@
 
 namespace WikiApiary\data\query;
 
+use MediaWiki\MediaWikiServices;
 use WikiApiary\data\ResponseHandler;
 use WikiApiary\data\Structure;
 
@@ -47,7 +48,42 @@ class Query {
 		if ( $errFound ) {
 			return "";
 		}
-		return "";
+		return $this->query( $get, $from, $where );
+	}
+
+	/**
+	 * @param string|array $select
+	 * @param string $table
+	 * @param array|null $selectWhere
+	 * @return array
+	 */
+	private function query( string|array $select, string $table, ?array $selectWhere ): array {
+		$lb          = MediaWikiServices::getInstance()->getDBLoadBalancer();
+		$dbr         = $lb->getConnectionRef( DB_REPLICA );
+
+		$selectOptions = [
+			'LIMIT'    => 1
+		];
+		if ( $selectWhere === null ) {
+			$selectWhere = '';
+		}
+
+		$res = $dbr->select(
+			$table,
+			$select,
+			$selectWhere,
+			__METHOD__,
+			$selectOptions
+		);
+		$result = [];
+		if ( $res->numRows() > 0 ) {
+			while ( $row = $res->fetchRow() ) {
+				$result[] = $row;
+			}
+			return $result;
+		} else {
+			return [];
+		}
 	}
 
 }

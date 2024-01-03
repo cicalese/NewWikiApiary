@@ -24,8 +24,15 @@ namespace WikiApiary;
 use DatabaseUpdater;
 use MediaWiki\Hook\ParserFirstCallInitHook;
 use MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook;
+use MediaWiki\MediaWikiServices;
 
 class DBHooks implements LoadExtensionSchemaUpdatesHook, ParserFirstCallInitHook {
+
+	/**
+	 * @var bool
+	 */
+	public static bool $debug;
+
 	/**
 	 * Updates database schema.
 	 *

@@ -10,6 +10,7 @@
 
 namespace WikiApiary;
 
+use MediaWiki\MediaWikiServices;
 use Parser;
 use WikiApiary\data\query\Query;
 use WikiApiary\data\ResponseHandler;
@@ -26,6 +27,15 @@ class TagHooks {
 	 * @return mixed
 	 */
 	public function w8y( Parser &$parser ): mixed {
+		// First set global debug status
+		$config = MediaWikiServices::getInstance()->getMainConfig();
+		if ( $config->has( 'WikiApiary' ) ) {
+			$w8yConfig = $config->get( 'WikiApiary' );
+			DBHooks::$debug = $w8yConfig['debug'];
+		} else {
+			DBHooks::$debug = false;
+		}
+
 		$result = '';
 		$this->parameters = $this->extractOptions(
 			array_slice(
@@ -41,10 +51,11 @@ class TagHooks {
 				$get = $this->checkForMultiple( $this->getOptionSetting( 'return' ) );
 				$table = $this->getOptionSetting( 'from' );
 				$where = $this->checkForMultiple( $this->getOptionSetting( 'where' ), true );
-				$result = print_r( $get, true ) . PHP_EOL;
-				$result .= print_r( $table, true ) . PHP_EOL;
-				$result .= print_r( $where, true ) . PHP_EOL;
-				$query->doQuery( $get, $table, $where );
+				ResponseHandler::printDebugMessage( $get, "return" );
+				ResponseHandler::printDebugMessage( $table, "table" );
+				ResponseHandler::printDebugMessage( $where, "where" );
+				$result = $query->doQuery( $get, $table, $where );
+				ResponseHandler::printDebugMessage( $result, "sql result" );
 				break;
 			case "addToDB":
 				break;
@@ -52,7 +63,7 @@ class TagHooks {
 		if ( !empty( ResponseHandler::getMessages() ) ) {
 			return ResponseHandler::getMessages();
 		} else {
-			return "<pre>" . $result . "</pre>";
+			return "<pre>" . print_r( $result, true ) . "</pre>";
 		}
 	}
 

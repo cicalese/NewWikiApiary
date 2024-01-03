@@ -6,7 +6,6 @@
 	],
 	"url": "https://www.mediawiki.org/wiki/Extension:WikiApiary",
 	"descriptionmsg": "wikiapiary-desc",
-	"manifest_version": 2,
 	"type": "parserhook",
 	"license-name": "MIT",
 	"requires": {
@@ -31,5 +30,13 @@
 	"Hooks": {
 		"LoadExtensionSchemaUpdates": "dbhooks",
 		"ParserFirstCallInit": "dbhooks"
-	}
+	},
+	"config": {
+		"WikiApiary": {
+			"value": {
+				"debug": false
+			}
+		}
+	},
+	"manifest_version": 2
 }
