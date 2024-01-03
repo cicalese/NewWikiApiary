@@ -5,12 +5,8 @@ Before running the scripts, you must install the following dependencies:
 
 ```
 apt install python3-dev python3-pip python3-wheel -y
-pip3 install sqlalchemy
-pip3 install pymysql
 pip3 install setuptools
-pip3 install requests
-pip3 install mwparserfromhell
-pip3 install pywikibot
+pip3 install -r requirements.txt
 ```
 
 Then, create a `user-password.py` file in the current directory containing
