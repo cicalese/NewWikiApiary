@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 from pywikibot import Site, Category
 from pywikibot.pagegenerators import CategorizedPageGenerator
 import mwparserfromhell
@@ -7,6 +8,12 @@ import sys
 sys.path.append('./lib')
 from models import engine, Wiki
 from utils import log_message
+
+
+def get_args():
+	parser = ArgumentParser(prog='Create', description='creates pages in wiki corresponding to URLs in file')
+	parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
+	return parser.parse_args()
 
 
 def get_wikis():
@@ -25,6 +32,7 @@ def get_url_from_page(wikipage):
 
 
 def run():
+	args = get_args()
 	with Session(engine) as session:
 		for page in get_wikis():
 			url = get_url_from_page(page)
@@ -32,7 +40,10 @@ def run():
 				stmt = select(Wiki).where(Wiki.w8y_wi_page_id == page.pageid)
 				wiki = session.scalars(stmt).one_or_none()
 				if not wiki:
-					log_message(session, f'Syncing page {page.title()} to database')
+					message = f'Syncing page {page.title()} to database'
+					log_message(session, message)
+					if args.verbose:
+						print(message)
 					wiki = Wiki(
 						w8y_wi_page_id=page.pageid,
 						w8y_wi_api_url=bytes(url, 'utf8'),

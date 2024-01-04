@@ -6,7 +6,7 @@ import requests
 import time
 
 
-def get_siteinfo(url, session):
+def get_siteinfo(url, args, session):
 	query = [
 		'action=query',
 		'meta=siteinfo',
@@ -19,10 +19,16 @@ def get_siteinfo(url, session):
 			response.encoding = 'utf-8-sig'
 			return response.json()
 		else:
-			log_message(session, f'Request failed with status code: {response.status_code}')
+			message = f'Request failed with status code: {response.status_code}'
+			log_message(session, message)
+			if args.verbose:
+				print(message)
 			return None
 	except requests.RequestException as e:
-		log_message(session, f'Request exception: {e}')
+		message = f'Request exception: {e}'
+		log_message(session, message)
+		if args.verbose:
+			print(message)
 		return None
 
 
@@ -33,13 +39,16 @@ def create_version_records(components):
 	extension_names = []
 	for comp in components:
 		if 'name' in comp and 'type' in comp:
-			name = bytes(comp['name'], 'utf8')
-			if 'version' in comp:
-				version = bytes(comp['version'], 'utf8')
+			name = bytes(comp['name'], 'utf-8')
+			if 'version' in comp and comp['version'] is not None:
+				if isinstance(comp['version'], str):
+					version = bytes(comp['version'], 'utf-8')
+				else:
+					version = bytes(str(comp['version']), 'utf-8')
 			else:
 				version = None
 			if 'url' in comp:
-				url = bytes(comp['url'], 'utf8')
+				url = bytes(comp['url'], 'utf-8')
 			else:
 				url = None
 			if comp['type'] == 'skin':
@@ -64,14 +73,14 @@ def create_version_records(components):
 	}
 
 
-def scrape_site(url, page_id, session):
-	data = get_siteinfo(url, session)
+def scrape_site(url, page_id, args, session):
+	data = get_siteinfo(url, args, session)
 	timestamp = time.time()
 
 	if not data or 'query' not in data or 'general' not in data['query'] or 'statistics' not in data['query']:
 		scrape = ScrapeRecord(
 			w8y_sr_page_id=page_id,
-			w8y_sr_api_url=bytes(url, 'utf8'),
+			w8y_sr_api_url=bytes(url, 'utf-8'),
 			w8y_sr_timestamp=timestamp,
 			w8y_sr_is_alive=False
 		)
@@ -105,17 +114,17 @@ def scrape_site(url, page_id, session):
 
 	scrape = ScrapeRecord(
 		w8y_sr_page_id=page_id,
-		w8y_sr_api_url=bytes(url, 'utf8'),
+		w8y_sr_api_url=bytes(url, 'utf-8'),
 		w8y_sr_timestamp=timestamp,
 		w8y_sr_is_alive=True,
-		w8y_sr_mw_version=bytes(mw_version, 'utf8'),
-		w8y_sr_db_version=bytes(db_version, 'utf8'),
-		w8y_sr_php_version=bytes(php_version, 'utf8'),
-		w8y_sr_language=bytes(language, 'utf8'),
-		w8y_sr_logo=bytes(logo, 'utf8'),
-		w8y_sr_favicon=bytes(favicon, 'utf8'),
-		w8y_sr_general=bytes(json.dumps(general), 'utf8'),
-		w8y_sr_statistics=bytes(json.dumps(statistics), 'utf8'),
+		w8y_sr_mw_version=bytes(mw_version, 'utf-8'),
+		w8y_sr_db_version=bytes(db_version, 'utf-8'),
+		w8y_sr_php_version=bytes(php_version, 'utf-8'),
+		w8y_sr_language=bytes(language, 'utf-8'),
+		w8y_sr_logo=bytes(logo, 'utf-8'),
+		w8y_sr_favicon=bytes(favicon, 'utf-8'),
+		w8y_sr_general=bytes(json.dumps(general), 'utf-8'),
+		w8y_sr_statistics=bytes(json.dumps(statistics), 'utf-8'),
 	)
 	session.add(scrape)
 	session.commit()

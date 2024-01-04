@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 import requests
 import pywikibot
 from sqlalchemy.orm import Session
@@ -8,7 +9,14 @@ from models import engine, Wiki
 from utils import log_message
 
 
-def get_sitename(apiurl, session):
+def get_args():
+	parser = ArgumentParser(prog='Create', description='creates pages in wiki corresponding to URLs in file')
+	parser.add_argument('file', help='file to read URLs from, one per line')
+	parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
+	return parser.parse_args()
+
+
+def get_sitename(apiurl, args, errors, session):
 	query = [
 		'action=query',
 		'meta=siteinfo',
@@ -28,28 +36,32 @@ def get_sitename(apiurl, session):
 						return general['sitename'] + ' (' + general['lang'] + ')'
 			return None
 		else:
-			log_message(
-				session,
-				f'Request to {apiurl} failed with status code: {response.status_code}'
-			)
+			message = f'Request to {apiurl} failed with status code: {response.status_code}'
+			log_message(session, message)
+			if args.verbose:
+				print(message)
 			errors.append(apiurl)
 			return None
 	except requests.RequestException as e:
-		log_message(session, f'Request to {apiurl} raised exception: {e}')
+		message = f'Request to {apiurl} raised exception: {e}'
+		log_message(session, message)
+		if args.verbose:
+			print(message)
 		errors.append(apiurl)
 		return None
 
 
-errors = []
 def run():
+	args = get_args()
+	errors = []
 	site = pywikibot.Site()
 	with Session(engine) as session:
 		try:
-			file_path = 'urls.txt'
+			file_path = args.file
 			with open(file_path, 'r') as file:
 				for idx, line in enumerate(file):
 					url = line.strip()
-					sitename = get_sitename(url, session)
+					sitename = get_sitename(url, args, errors, session)
 					if sitename:
 						log_message(
 							session,
@@ -80,7 +92,10 @@ def run():
 			pass
 		finally:
 			for error in errors:
-				log_message(session, f'Bad URL: {error}')
+				message = f'Bad URL: {error}'
+				log_message(session, message)
+				if args.verbose:
+					print(message)
 
 
 if __name__ == '__main__':
