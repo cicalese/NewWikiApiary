@@ -86,7 +86,7 @@ def scrape_site(url, page_id, args, session):
 		)
 		session.add(scrape)
 		session.commit()
-		return (scrape.w8y_sr_sr_id, True)
+		return scrape.w8y_sr_sr_id, True
 
 	query = data['query']
 
@@ -149,4 +149,4 @@ def scrape_site(url, page_id, args, session):
 			)
 		)
 
-	return (sr_id, False)
+	return sr_id, False

@@ -23,8 +23,8 @@ def get_wikis(session):
 def run():
 	args = get_args()
 	start_time = time.time()
-	good_count = 0;
-	error_count = 0;
+	good_count = 0
+	error_count = 0
 	with Session(engine) as session:
 		try:
 			wikis = get_wikis(session)
@@ -43,7 +43,6 @@ def run():
 						print(message)
 				url = wiki.w8y_wi_api_url.decode('utf8')
 				page_id = wiki.w8y_wi_page_id
-				last_scrape_id = wiki.w8y_wi_last_sr_id
 				if args.verbose > 1:
 					message = f'Scraping {url}'
 					print(message)

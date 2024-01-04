@@ -62,7 +62,7 @@ def run():
 		log_message(session, message)
 		if args.verbose:
 			print(message)
-		count = 0;
+		count = 0
 		try:
 			file_path = args.file
 			with open(file_path, 'r') as file:
