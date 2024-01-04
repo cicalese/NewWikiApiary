@@ -3,6 +3,7 @@ import requests
 import pywikibot
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+import time
 import sys
 sys.path.append('./lib')
 from models import engine, Wiki
@@ -53,13 +54,26 @@ def get_sitename(apiurl, args, errors, session):
 
 def run():
 	args = get_args()
+	start_time = time.time()
 	errors = []
 	site = pywikibot.Site()
 	with Session(engine) as session:
+		message = 'Starting importing URLs.'
+		log_message(session, message)
+		if args.verbose:
+			print(message)
+		count = 0;
 		try:
 			file_path = args.file
 			with open(file_path, 'r') as file:
 				for idx, line in enumerate(file):
+					count = idx
+					if idx % 100 == 0:
+						duration = time.time() - start_time
+						message = 'Processed %d URLs in %d seconds' % (idx, duration)
+						log_message(session, message)
+						if args.verbose:
+							print(message)
 					url = line.strip()
 					sitename = get_sitename(url, args, errors, session)
 					if sitename:
@@ -91,6 +105,11 @@ def run():
 		except KeyboardInterrupt:
 			pass
 		finally:
+			duration = time.time() - start_time
+			message = 'Completed importing URLs, %d complete in %d seconds' % (count, duration)
+			log_message(session, message)
+			if args.verbose:
+				print(message)
 			for error in errors:
 				message = f'Bad URL: {error}'
 				log_message(session, message)

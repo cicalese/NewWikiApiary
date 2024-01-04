@@ -26,39 +26,43 @@ def run():
 	good_count = 0;
 	error_count = 0;
 	with Session(engine) as session:
-		wikis = get_wikis(session)
-		message = 'Starting scraping wikis.'
-		log_message(session, message)
-		if args.verbose:
-			print(message)
-		count = 0
-		for wiki in wikis:
-			count += 1
-			if count % 100 == 0:
-				duration = time.time() - start_time
-				message = 'Processed %d wikis in %d seconds' % (count, duration)
-				log_message(session, message)
-				if args.verbose:
-					print(message)
-			url = wiki.w8y_wi_api_url.decode('utf8')
-			page_id = wiki.w8y_wi_page_id
-			last_scrape_id = wiki.w8y_wi_last_sr_id
-			if args.verbose > 1:
-				message = f'Scraping {url}'
+		try:
+			wikis = get_wikis(session)
+			message = 'Starting scraping wikis.'
+			log_message(session, message)
+			if args.verbose:
 				print(message)
-			sr_id = scrape_site(url, page_id, args, session)
-			if sr_id:
+			count = 0
+			for wiki in wikis:
+				count += 1
+				if count % 100 == 0:
+					duration = time.time() - start_time
+					message = 'Processed %d wikis in %d seconds' % (count, duration)
+					log_message(session, message)
+					if args.verbose:
+						print(message)
+				url = wiki.w8y_wi_api_url.decode('utf8')
+				page_id = wiki.w8y_wi_page_id
+				last_scrape_id = wiki.w8y_wi_last_sr_id
+				if args.verbose > 1:
+					message = f'Scraping {url}'
+					print(message)
+				(sr_id, error) = scrape_site(url, page_id, args, session)
 				wiki.w8y_wi_last_sr_id = sr_id
 				session.add(wiki)
 				session.commit()
-				good_count += 1
-			else:
-				error_count += 1
-	duration = time.time() - start_time
-	message = 'Completed scraping, %d complete, %d errors, %d seconds' % (good_count, error_count, duration)
-	log_message(session, message)
-	if args.verbose:
-		print(message)
+				if error:
+					error_count += 1
+				else:
+					good_count += 1
+		except KeyboardInterrupt:
+			session.rollback()
+		finally:
+			duration = time.time() - start_time
+			message = 'Completed scraping, %d complete, %d errors, %d seconds' % (good_count, error_count, duration)
+			log_message(session, message)
+			if args.verbose:
+				print(message)
 
 
 if __name__ == '__main__':
