@@ -19,14 +19,20 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-namespace MediaWiki\Extension\WikiApiary;
+namespace WikiApiary;
 
 use DatabaseUpdater;
+use MediaWiki\Hook\ParserFirstCallInitHook;
 use MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook;
+use MediaWiki\MediaWikiServices;
 
-class DBHooks implements
-	LoadExtensionSchemaUpdatesHook
-{
+class DBHooks implements LoadExtensionSchemaUpdatesHook, ParserFirstCallInitHook {
+
+	/**
+	 * @var bool
+	 */
+	public static bool $debug;
+
 	/**
 	 * Updates database schema.
 	 *
@@ -35,5 +41,16 @@ class DBHooks implements
 	public function onLoadExtensionSchemaUpdates( $updater ) {
 		$dir = __DIR__ . '/../sql/' . $updater->getDB()->getType();
 		$updater->addExtensionTable( 'w8y_wikis', $dir . '/tables.sql' );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function onParserFirstCallInit( $parser ): void {
+		$tagHooks = new TagHooks();
+		$parser->setFunctionHook(
+			'w8y',
+			[ $tagHooks, 'w8y' ]
+		);
 	}
 }

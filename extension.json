@@ -6,7 +6,6 @@
 	],
 	"url": "https://www.mediawiki.org/wiki/Extension:WikiApiary",
 	"descriptionmsg": "wikiapiary-desc",
-	"manifest_version": 2,
 	"type": "parserhook",
 	"license-name": "MIT",
 	"requires": {
@@ -17,15 +16,27 @@
 			"i18n"
 		]
 	},
+	"ExtensionMessagesFiles": {
+		"WikiApiaryMagic": "i18n/WikiApiary.i18n.php"
+	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\WikiApiary\\": "includes/"
+		"WikiApiary\\": "includes/"
 	},
 	"HookHandlers": {
 		"dbhooks": {
-			"class": "MediaWiki\\Extension\\WikiApiary\\DBHooks"
+			"class": "WikiApiary\\DBHooks"
 		}
 	},
 	"Hooks": {
-		"LoadExtensionSchemaUpdates": "dbhooks"
-	}
+		"LoadExtensionSchemaUpdates": "dbhooks",
+		"ParserFirstCallInit": "dbhooks"
+	},
+	"config": {
+		"WikiApiary": {
+			"value": {
+				"debug": false
+			}
+		}
+	},
+	"manifest_version": 2
 }
