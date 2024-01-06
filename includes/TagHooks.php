@@ -70,10 +70,8 @@ class TagHooks {
 	/**
 	 * Converts an array of values in form [0] => "name=value" into a real associative array in form [name] => value.
 	 * If no "=" is provided, true is assumed like this: [name] => true.
-	 *
-	 * @param array string $options
-	 *
-	 * @return array $results
+	 * @param array $options
+	 * @return array
 	 */
 	private function extractOptions( array $options ): array {
 		$results = [];
