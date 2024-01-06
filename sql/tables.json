@@ -159,5 +159,29 @@
 		"pk": [
 			"w8y_ex_sr_id", "w8y_ex_name"
 		]
+	},
+	{
+		"name": "w8y_log",
+		"columns": [
+			{
+				"name": "w8y_lo_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "w8y_lo_timestamp",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "w8y_lo_message",
+				"type": "string",
+				"options": { "notnull": true }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"w8y_lo_id"
+		]
 	}
 ]

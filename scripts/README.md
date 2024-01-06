@@ -4,13 +4,13 @@
 Before running the scripts, you must install the following dependencies:
 
 ```
-apt install python3-dev python3-pip python3-wheel -y
-pip3 install sqlalchemy
-pip3 install pymysql
-pip3 install setuptools
-pip3 install requests
-pip3 install mwparserfromhell
-pip3 install pywikibot
+apt install python3-dev python3-pip python3-wheel pipx -y
+pipx install pywikibot
+pipx inject pywikibot sqlalchemy
+pipx inject pywikibot pymysql
+pipx inject pywikibot requests
+pipx inject pywikibot mwparserfromhell
+pipx ensurepath
 ```
 
 Then, create a `user-password.py` file in the current directory containing
@@ -34,9 +34,12 @@ WIKIAPIARY_URL
 ```
 
 ## Scripts
+The scripts are run using `pwb`. You must first `pwb login`.
+
 - `create_pages_from_file` reads the file urls.txt in the current directory; the file has one URL per line; it creates corresponding pages in the wiki
 - `sync_pages_to_db` creates Wiki records in the database corresponding to the pages that were created in the wiki
 - `scrape` scrapes the data for every row in Wikis and stores the data in the database
+- `truncate_log` truncates the log to the last 1000 entries
 
 ## See also
 - [Pywikibot documentation](https://doc.wikimedia.org/pywikibot/stable/)

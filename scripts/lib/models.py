@@ -14,14 +14,22 @@ engine = create_engine(
 Base = declarative_base()
 Base.metadata.reflect(engine)
 
+
 class Wiki(Base):
 	__table__ = Base.metadata.tables['w8y_wikis']
+
 
 class ScrapeRecord(Base):
 	__table__ = Base.metadata.tables['w8y_scrape_records']
 
+
 class Skin(Base):
 	__table__ = Base.metadata.tables['w8y_skins']
 
+
 class Extension(Base):
 	__table__ = Base.metadata.tables['w8y_extensions']
+
+
+class Log(Base):
+	__table__ = Base.metadata.tables['w8y_log']

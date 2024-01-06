@@ -45,3 +45,11 @@ CREATE TABLE /*_*/w8y_extensions (
   w8y_ex_doc_url VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY(w8y_ex_sr_id, w8y_ex_name)
 ) /*$wgDBTableOptions*/;
+
+
+CREATE TABLE /*_*/w8y_log (
+  w8y_lo_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
+  w8y_lo_timestamp INT UNSIGNED NOT NULL,
+  w8y_lo_message VARCHAR(255) NOT NULL,
+  PRIMARY KEY(w8y_lo_id)
+) /*$wgDBTableOptions*/;
