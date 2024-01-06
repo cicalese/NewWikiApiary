@@ -1,6 +1,6 @@
 <?php
 /**
- * Created by  : Wikibase Solutions B.V.
+ * Created by  : Open CSP
  * Project     : WikiApiary
  * Filename    : Query.php
  * Description :

@@ -1,7 +1,7 @@
 <?php
 /**
- * Created by  : Wikibase Solutions B.V.
- * Project     : dev1-03
+ * Created by  : Open CSP.
+ * Project     : WikiApiary
  * Filename    : Structure.php
  * Description :
  * Date        : 2-1-2024
