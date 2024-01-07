@@ -14,6 +14,7 @@ use MediaWiki\MediaWikiServices;
 use Parser;
 use WikiApiary\data\query\Query;
 use WikiApiary\data\ResponseHandler;
+use WikiApiary\data\Utils;
 
 class TagHooks {
 
@@ -37,24 +38,23 @@ class TagHooks {
 		}
 
 		$result = '';
-		$this->parameters = $this->extractOptions(
+		Utils::$parameters = $this->extractOptions(
 			array_slice(
 				func_get_args(),
 				1
 			)
 		);
-		$action = $this->getOptionSetting( 'action' );
+		$action = Utils::getOptionSetting( 'action' );
 
 		switch ( $action ) {
 			case "query":
 				$query = new Query();
-				$get = $this->checkForMultiple( $this->getOptionSetting( 'return' ) );
-				$table = $this->getOptionSetting( 'from' );
-				$where = $this->checkForMultiple( $this->getOptionSetting( 'where' ), true );
-				ResponseHandler::printDebugMessage( $get, "return" );
-				ResponseHandler::printDebugMessage( $table, "table" );
-				ResponseHandler::printDebugMessage( $where, "where" );
-				$result = $query->doQuery( $get, $table, $where );
+				$get = Utils::getOptionSetting( 'return' );
+				$table = Utils::getOptionSetting( 'from' );
+				$limit = Utils::getOptionSetting( 'limit' );
+				$format = Utils::getOptionSetting( 'format' );
+				$where = Utils::getOptionSetting( 'where' );
+				$result = $query->doQuery( $get, $table, $where, $limit, $format );
 				ResponseHandler::printDebugMessage( $result, "sql result" );
 				break;
 			case "addToDB":
@@ -62,8 +62,10 @@ class TagHooks {
 		}
 		if ( !empty( ResponseHandler::getMessages() ) ) {
 			return ResponseHandler::getMessages();
-		} else {
+		} elseif ( is_array( $result ) ) {
 			return "<pre>" . print_r( $result, true ) . "</pre>";
+		} else {
+			return $result;
 		}
 	}
 
@@ -93,64 +95,4 @@ class TagHooks {
 
 		return $results;
 	}
-
-	/**
-	 * @param string $option
-	 * @param bool $extract
-	 * @return string|array
-	 */
-	private function checkForMultiple( string $option, bool $extract = false ): string|array {
-		$ret = [];
-		if ( str_contains( $option, ','	) ) {
-			$exploded = array_map( 'trim', explode(
-				',',
-				$option
-			) );
-			if ( $extract ) {
-				foreach ( $exploded as $item ) {
-					if ( str_contains( $item, '=' ) ) {
-						$itemExploded = explode( '=', $item );
-						$k = trim( $itemExploded[0] );
-						$v = trim( $itemExploded[1] );
-						$ret[$k] = $v;
-					}
-				}
-			} else {
-				$ret = $exploded;
-			}
-		} elseif ( $extract ) {
-			if ( str_contains( $option, '=' ) ) {
-				$itemExploded = explode( '=', $option );
-				$k = $itemExploded[0];
-				$v = $itemExploded[1];
-				$ret[$k] = $v;
-			}
-		} else {
-			return $option;
-		}
-		return $ret;
-	}
-
-	/**
-	 * @param string $k
-	 * @param bool $checkEmpty
-	 *
-	 * @return bool|mixed
-	 */
-	private function getOptionSetting( string $k, bool $checkEmpty = true ): mixed {
-		if ( $checkEmpty ) {
-			if ( isset( $this->parameters[ $k ] ) && $this->parameters[ $k ] != '' ) {
-				return trim( $this->parameters[ $k ] );
-			} else {
-				return false;
-			}
-		} else {
-			if ( isset( $this->parameters[ $k ] ) ) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-	}
-
 }

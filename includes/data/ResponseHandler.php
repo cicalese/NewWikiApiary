@@ -39,11 +39,11 @@ class ResponseHandler {
 	}
 
 	/**
-	 * @param string|array $message
+	 * @param mixed $message
 	 * @param string $title
 	 * @return void
 	 */
-	public static function printDebugMessage( string|array $message, string $title = '' ): void {
+	public static function printDebugMessage( mixed $message, string $title = '' ): void {
 		if ( DBHooks::$debug ) {
 			echo "<pre>$title\n";
 			var_dump( $message );
