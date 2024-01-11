@@ -75,4 +75,20 @@ class Utils {
 			}
 		}
 	}
+
+	/**
+	 * @param array $result
+	 *
+	 * @return string
+	 */
+	public static function formatCSV( array $result ): string {
+		if ( empty( $result ) ) {
+			return '';
+		}
+		$ret = '';
+		foreach ( $result as $row ) {
+			$ret .= implode( ',', $row ) . ';';
+		}
+		return $ret;
+	}
 }

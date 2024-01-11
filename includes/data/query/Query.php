@@ -121,26 +121,12 @@ class Query {
 			}
 		}
 		if ( $format === 'csv' ) {
-			return $this->formatCSV( $result );
+			return Utils::formatCSV( $result );
 		}
 
 		return $result;
 	}
 
-	/**
-	 * @param array $result
-	 *
-	 * @return string
-	 */
-	private function formatCSV( array $result ): string {
-		if ( empty( $result ) ) {
-			return '';
-		}
-		$ret = '';
-		foreach ( $result as $row ) {
-			$ret .= implode( ',', $row ) . ';';
-		}
-		return $ret;
-	}
+
 
 }

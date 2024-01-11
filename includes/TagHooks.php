@@ -13,6 +13,7 @@ namespace WikiApiary;
 use MediaWiki\MediaWikiServices;
 use Parser;
 use WikiApiary\data\query\Query;
+use WikiApiary\data\query\Wiki;
 use WikiApiary\data\ResponseHandler;
 use WikiApiary\data\Utils;
 
@@ -56,6 +57,16 @@ class TagHooks {
 				$where = Utils::getOptionSetting( 'where' );
 				$result = $query->doQuery( $get, $table, $where, $limit, $format );
 				ResponseHandler::printDebugMessage( $result, "sql result" );
+				break;
+			case "wiki":
+				$pId = Utils::getOptionSetting( 'pageId' );
+				if ( $pId === null ) {
+					ResponseHandler::addMessage( wfMessage( 'w8y_missing-page-id' )->text() );
+				} else {
+					$query = new Wiki();
+					$result = $query->doQuery( intval( $pId ) );
+					ResponseHandler::printDebugMessage( $result, "sql result" );
+				}
 				break;
 			case "addToDB":
 				break;
