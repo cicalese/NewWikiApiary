@@ -11,6 +11,7 @@
 namespace WikiApiary\data\query;
 
 use MediaWiki\MediaWikiServices;
+use WikiApiary\data\Utils;
 
 class Wiki {
 
@@ -18,10 +19,17 @@ class Wiki {
 	private const DBTABLE_EXTENSIONS = 'w8y_extensions';
 	private const DBTABLE_SKINS = 'w8y_skins';
 	private const DBTABLE_SCRAPE = 'w8y_scrape_records';
-	private const WIKI_PAGEID = 'w8y_wi_page_id';
+	private const PAGEID_WIKI = 'w8y_wi_page_id';
+	private const PAGEID_SCRAPE = 'w8y_sr_page_id';
+	private const SCRAPE_ID = 'w8y_sr_sr_id';
+	private const EXTENSION_SCRAPE_ID = 'w8y_ex_sr_id';
 
-
-	public function doQuery( int $pageID ) {
+	/**
+	 * @param int $pageID
+	 *
+	 * @return string
+	 */
+	public function doQuery( int $pageID ): string {
 		/*
 		 *
 		Wiki - given page ID:
@@ -38,12 +46,26 @@ class Wiki {
 		 */
 		$lb = MediaWikiServices::getInstance()->getDBLoadBalancer();
 		$dbr = $lb->getConnectionRef( DB_REPLICA );
-		$select = [ self::DBTABLE_WIKIS . '.*', self::DBTABLE_EXTENSIONS . '.*', self::DBTABLE_SCRAPE . '.*' ];
-		$from = self::DBTABLE_WIKIS;
-		$where = [ self::WIKI_PAGEID => $pageID ];
-		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )
-			->join( self::DBTABLE_EXTENSIONS, null, self::DBTABLE_WIKIS . '.' . self::WIKI_PAGEID . ' = ' )
-		
 
+		 $select = [ self::DBTABLE_WIKIS . '.*', self::DBTABLE_SCRAPE . '.*', self::DBTABLE_EXTENSIONS . '.*' ];
+		$from = self::DBTABLE_WIKIS;
+		$where = [ self::DBTABLE_WIKIS . '.' . self::PAGEID_WIKI => $pageID ];
+		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->leftJoin( self::DBTABLE_SCRAPE,
+				null,
+				self::DBTABLE_WIKIS . '.' . self::PAGEID_WIKI . ' = ' . self::DBTABLE_SCRAPE . '.' . self::PAGEID_SCRAPE )
+			->leftJoin( self::DBTABLE_EXTENSIONS,
+				null,
+				self::DBTABLE_SCRAPE . '.' . self::SCRAPE_ID . ' = ' . self::DBTABLE_EXTENSIONS . '.' . self::EXTENSION_SCRAPE_ID
+			)->where( $where )->caller( __METHOD__ )->fetchResultSet();
+
+
+		$ret = [];
+		foreach ( $res as $row ) {
+			$ret[] = (array)$row;
+		}
+		echo "<pre>";
+		print_r( $ret );
+		echo "</pre>";
+		return Utils::formatCSV( $ret );
 	}
 }
