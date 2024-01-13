@@ -11,6 +11,7 @@
 namespace WikiApiary\data\query;
 
 use MediaWiki\MediaWikiServices;
+use WikiApiary\data\Structure;
 use WikiApiary\data\Utils;
 
 class Wiki {
@@ -19,10 +20,20 @@ class Wiki {
 	private const DBTABLE_EXTENSIONS = 'w8y_extensions';
 	private const DBTABLE_SKINS = 'w8y_skins';
 	private const DBTABLE_SCRAPE = 'w8y_scrape_records';
-	private const PAGEID_WIKI = 'w8y_wi_page_id';
-	private const PAGEID_SCRAPE = 'w8y_sr_page_id';
-	private const SCRAPE_ID = 'w8y_sr_sr_id';
+	private const WIKI_PAGEID = 'w8y_wi_page_id';
+	private const WIKI_DEFUNCT = 'w8y_wi_is_defunct';
+	private const WIKI_LAST_SR_RCRD = 'w8y_wi_last_sr_id';
+	private const SR_ID = 'w8y_sr_sr_id';
 	private const EXTENSION_SCRAPE_ID = 'w8y_ex_sr_id';
+
+	/**
+	 * @var Structure
+	 */
+	private Structure $structure;
+
+	public function __construct() {
+		$this->structure = new Structure();
+	}
 
 	/**
 	 * @param int $pageID
@@ -47,15 +58,62 @@ class Wiki {
 		$lb = MediaWikiServices::getInstance()->getDBLoadBalancer();
 		$dbr = $lb->getConnectionRef( DB_REPLICA );
 
-		 $select = [ self::DBTABLE_WIKIS . '.*', self::DBTABLE_SCRAPE . '.*', self::DBTABLE_EXTENSIONS . '.*' ];
+		// Let's get the wiki and scrape information first
+
+
+		$select = [ self::DBTABLE_WIKIS . '.*', self::DBTABLE_SCRAPE . '.*' ];
 		$from = self::DBTABLE_WIKIS;
-		$where = [ self::DBTABLE_WIKIS . '.' . self::PAGEID_WIKI => $pageID ];
+		$where = [ self::DBTABLE_WIKIS . '.' . self::WIKI_PAGEID => $pageID,
+			self::DBTABLE_WIKIS . '.' . self::WIKI_DEFUNCT => 0 ];
+		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->join( self::DBTABLE_SCRAPE,
+			null,
+			self::DBTABLE_WIKIS . '.' . self::WIKI_LAST_SR_RCRD . ' = ' . self::DBTABLE_SCRAPE . '.' . self::SR_ID )
+			->where( $where )->caller( __METHOD__ )->fetchResultSet();
+		$ret = [];
+		foreach ( $res as $row ) {
+			$ret[] = (array)$row;
+		}
+		$ret = $ret[0];
+		$result = [];
+		foreach ( $ret as $k => $v ) {
+			echo substr( $k, 0, 5 ) . PHP_EOL;
+			switch ( substr( $k, 0, 6 ) ) {
+				case "w8y_wi":
+					$result['wiki'][$k] = $v;
+					break;
+				case "w8y_sr":
+					$result['scrape'][$k] = $v;
+					break;
+			}
+		}
+
+		$select = [ '*' ];
+		$from = self::DBTABLE_EXTENSIONS;
+		$where = [ self::EXTENSION_SCRAPE_ID => $result['scrape'][self::SR_ID] ];
+		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->
+		where( $where )->caller( __METHOD__ )->fetchResultSet();
+
+		$ret = [];
+		foreach ( $res as $row ) {
+			$ret[] = (array)$row;
+		}
+		$result['extensions'] = $ret;
+		echo "<pre>";
+		print_r( $result );
+		echo "</pre>";
+		return "";
+		//return Utils::formatCSV( $result );
+
+		/*
+		$select = [ self::DBTABLE_WIKIS . '.*', self::DBTABLE_SCRAPE . '.*', self::DBTABLE_EXTENSIONS . '.*' ];
+		$from = self::DBTABLE_WIKIS;
+		$where = [ self::DBTABLE_WIKIS . '.' . self::WIKI_PAGEID => $pageID ];
 		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->leftJoin( self::DBTABLE_SCRAPE,
 				null,
-				self::DBTABLE_WIKIS . '.' . self::PAGEID_WIKI . ' = ' . self::DBTABLE_SCRAPE . '.' . self::PAGEID_SCRAPE )
+				self::DBTABLE_WIKIS . '.' . self::WIKI_LAST_SR_RCRD . ' = ' . self::DBTABLE_SCRAPE . '.' . self::SR_ID )
 			->leftJoin( self::DBTABLE_EXTENSIONS,
 				null,
-				self::DBTABLE_SCRAPE . '.' . self::SCRAPE_ID . ' = ' . self::DBTABLE_EXTENSIONS . '.' . self::EXTENSION_SCRAPE_ID
+				self::DBTABLE_SCRAPE . '.' . self::SR_ID . ' = ' . self::DBTABLE_EXTENSIONS . '.' . self::EXTENSION_SCRAPE_ID
 			)->where( $where )->caller( __METHOD__ )->fetchResultSet();
 
 
@@ -67,5 +125,6 @@ class Wiki {
 		print_r( $ret );
 		echo "</pre>";
 		return Utils::formatCSV( $ret );
+		*/
 	}
 }
