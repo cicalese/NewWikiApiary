@@ -10,6 +10,9 @@
 
 namespace WikiApiary\data;
 
+use ExtensionRegistry;
+use Title;
+
 class Utils {
 
 	/**
@@ -55,24 +58,51 @@ class Utils {
 	}
 
 	/**
+	 * @param int $id
+	 *
+	 * @return string|null
+	 */
+	public static function getPageTitleFromID( int $id ): ?string {
+		$title = Title::newFromID( $id );
+		return $title?->getFullText();
+	}
+
+	/**
 	 * @param string $k
 	 * @param bool $checkEmpty
+	 * @param array|null $arguments
 	 *
 	 * @return mixed
 	 */
-	public static function getOptionSetting( string $k, bool $checkEmpty = true ): mixed {
+	public static function getOptionSetting( string $k, bool $checkEmpty = true, array $arguments = [] ): mixed {
+		if ( empty( $arguments ) ) {
+			$arguments = self::$parameters;
+		}
 		if ( $checkEmpty ) {
-			if ( isset( self::$parameters[ $k ] ) && self::$parameters[ $k ] != '' ) {
-				return trim( self::$parameters[ $k ] );
+			if ( isset( $arguments[ $k ] ) && $arguments[ $k ] != '' ) {
+				return trim( $arguments[ $k ] );
 			} else {
 				return null;
 			}
 		} else {
-			if ( isset( self::$parameters[ $k ] ) ) {
+			if ( isset( $arguments[ $k ] ) ) {
 				return true;
 			} else {
 				return null;
 			}
+		}
+	}
+
+	/**
+	 * @param array $data
+	 *
+	 * @return mixed
+	 */
+	public static function exportArrayFunction( array $data ): array {
+		if ( ExtensionRegistry::getInstance()->isLoaded( 'ArrayFunctions' ) ) {
+			return [ Utils::export( $data ) ];
+		} else {
+			return [];
 		}
 	}
 

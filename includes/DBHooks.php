@@ -25,6 +25,7 @@ use DatabaseUpdater;
 use MediaWiki\Hook\ParserFirstCallInitHook;
 use MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook;
 use MediaWiki\MediaWikiServices;
+use WikiApiary\Scribunto\ScribuntoLuaLibrary;
 
 class DBHooks implements LoadExtensionSchemaUpdatesHook, ParserFirstCallInitHook {
 
@@ -52,5 +53,25 @@ class DBHooks implements LoadExtensionSchemaUpdatesHook, ParserFirstCallInitHook
 			'w8y',
 			[ $tagHooks, 'w8y' ]
 		);
+	}
+
+	/**
+	 * Add w8y library to Scribunto.
+	 *
+	 * @link https://www.mediawiki.org/wiki/Extension:Scribunto/Hooks/ScribuntoExternalLibraries
+	 *
+	 * @param string $engine
+	 * @param array &$extraLibraries
+	 * @return bool
+	 */
+	public static function onScribuntoExternalLibraries( string $engine, array &$extraLibraries ): bool {
+		if ( $engine !== 'lua' ) {
+			// Don't mess with other engines
+			return true;
+		}
+
+		$extraLibraries['w8y'] = ScribuntoLuaLibrary::class;
+
+		return true;
 	}
 }

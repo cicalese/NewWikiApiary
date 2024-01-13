@@ -26,6 +26,7 @@ class TagHooks {
 
 	/**
 	 * @param Parser &$parser
+	 *
 	 * @return mixed
 	 */
 	public function w8y( Parser &$parser ): mixed {
@@ -39,12 +40,8 @@ class TagHooks {
 		}
 
 		$result = '';
-		Utils::$parameters = $this->extractOptions(
-			array_slice(
-				func_get_args(),
-				1
-			)
-		);
+		Utils::$parameters = $this->extractOptions( array_slice( func_get_args(),
+				1 ) );
 		$action = Utils::getOptionSetting( 'action' );
 
 		switch ( $action ) {
@@ -55,8 +52,13 @@ class TagHooks {
 				$limit = Utils::getOptionSetting( 'limit' );
 				$format = Utils::getOptionSetting( 'format' );
 				$where = Utils::getOptionSetting( 'where' );
-				$result = $query->doQuery( $get, $table, $where, $limit, $format );
-				ResponseHandler::printDebugMessage( $result, "sql result" );
+				$result = $query->doQuery( $get,
+					$table,
+					$where,
+					$limit,
+					$format );
+				ResponseHandler::printDebugMessage( $result,
+					"sql result" );
 				break;
 			case "wiki":
 				$pId = Utils::getOptionSetting( 'pageId' );
@@ -65,7 +67,8 @@ class TagHooks {
 				} else {
 					$query = new Wiki();
 					$result = $query->doQuery( intval( $pId ) );
-					ResponseHandler::printDebugMessage( $result, "sql result" );
+					ResponseHandler::printDebugMessage( $result,
+						"sql result" );
 				}
 				break;
 			case "addToDB":
@@ -74,7 +77,8 @@ class TagHooks {
 		if ( !empty( ResponseHandler::getMessages() ) ) {
 			return ResponseHandler::getMessages();
 		} elseif ( is_array( $result ) ) {
-			return "<pre>" . print_r( $result, true ) . "</pre>";
+			return "<pre>" . print_r( $result,
+					true ) . "</pre>";
 		} else {
 			return $result;
 		}
@@ -83,7 +87,9 @@ class TagHooks {
 	/**
 	 * Converts an array of values in form [0] => "name=value" into a real associative array in form [name] => value.
 	 * If no "=" is provided, true is assumed like this: [name] => true.
+	 *
 	 * @param array $options
+	 *
 	 * @return array
 	 */
 	private function extractOptions( array $options ): array {
@@ -91,9 +97,9 @@ class TagHooks {
 
 		foreach ( $options as $option ) {
 			$pair = array_map( 'trim',
-							   explode( '=',
-										$option,
-										2 ) );
+				explode( '=',
+					$option,
+					2 ) );
 
 			if ( count( $pair ) === 2 ) {
 				$results[$pair[0]] = $pair[1];

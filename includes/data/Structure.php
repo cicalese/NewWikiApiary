@@ -48,6 +48,15 @@ class Structure {
 
 	/**
 	 * @param string $tableName
+	 *
+	 * @return array
+	 */
+	public function returnTableColumns( string $tableName ): array {
+		return $this->dbStructure[$tableName] ?? [];
+	}
+
+	/**
+	 * @param string $tableName
 	 * @param string $columnName
 	 * @return bool
 	 */

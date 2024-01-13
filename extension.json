@@ -29,7 +29,8 @@
 	},
 	"Hooks": {
 		"LoadExtensionSchemaUpdates": "dbhooks",
-		"ParserFirstCallInit": "dbhooks"
+		"ParserFirstCallInit": "dbhooks",
+		"ScribuntoExternalLibraries": "dbhooks"
 	},
 	"config": {
 		"WikiApiary": {
