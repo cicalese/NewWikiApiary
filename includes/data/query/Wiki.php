@@ -11,6 +11,7 @@
 namespace WikiApiary\data\query;
 
 use MediaWiki\MediaWikiServices;
+use WikiApiary\data\ResponseHandler;
 use WikiApiary\data\Structure;
 use WikiApiary\data\Utils;
 use Wikimedia\Rdbms\DBConnRef;
@@ -51,11 +52,13 @@ class Wiki {
 		where( $where )->caller( __METHOD__ )->fetchResultSet();
 
 		$ret = [];
+		$t = 0;
 		if ( $res->numRows() > 0 ) {
 			while ( $row = $res->fetchRow() ) {
 				foreach ( $this->structure->returnTableColumns( self::DBTABLE_EXTENSIONS ) as $tName ) {
-					$ret[$tName] = $row[$tName];
+					$ret[$t][$tName] = $row[$tName];
 				}
+				$t++;
 			}
 		}
 		return $ret;
@@ -75,10 +78,12 @@ class Wiki {
 		where( $where )->caller( __METHOD__ )->fetchResultSet();
 
 		$ret = [];
+		$t = 0;
 		if ( $res->numRows() > 0 ) {
 			while ( $row = $res->fetchRow() ) {
 				foreach ( $this->structure->returnTableColumns( self::DBTABLE_SKINS ) as $tName ) {
-					$ret[$tName] = $row[$tName];
+					$ret[$t][$tName] = $row[$tName];
+					$t++;
 				}
 			}
 		}
@@ -108,9 +113,6 @@ class Wiki {
 			}
 			$ret = $ret[0];
 			foreach ( $ret as $k => $v ) {
-				echo substr( $k,
-						0,
-						5 ) . PHP_EOL;
 				switch ( substr( $k,
 					0,
 					6 ) ) {
@@ -128,10 +130,11 @@ class Wiki {
 
 	/**
 	 * @param int $pageID
+	 * @param string $export
 	 *
 	 * @return mixed
 	 */
-	public function doQuery( int $pageID, $export = "table" ): mixed {
+	public function doQuery( int $pageID, string $export = "table" ): mixed {
 		/*
 		 *
 		Wiki - given page ID:
@@ -151,28 +154,24 @@ class Wiki {
 
 		// Let's get the wiki and scrape information first
 
-
 		$result = $this->getWikiAndScrapeRecord( $pageID, $dbr );
 		if ( empty( $result ) ) {
 			return $result;
 		}
 		$result['extensions'] = $this->getExtensions( $result['scrape'][self::SR_ID], $dbr );
 		$result['skins'] = $this->getSkins( $result['scrape'][self::SR_ID], $dbr );
-
-		$data = match ( $export ) {
-			"table" => $renderMethod->renderTable( $res,
-				$pId ),
-			"arrayfunctions" => Utils::exportArrayFunction( $result ),
-			"lua" => $renderMethod->renderLua( $res,
-				$pId ),
-			default => "",
-		};
-
-		echo "<pre>";
-		print_r( $result );
-		echo "</pre>";
-		return "";
-		//return Utils::formatCSV( $result );
-
+		switch ( $export ) {
+			case "table":
+				//ResponseHandler::printDebugMessage( $result, "sql result" );
+				return Utils::renderTable( $result, 'Results for ' . Utils::getPageTitleFromID( $pageID ) .
+				' ( pageID: ' . $pageID . ' )' );
+			case "arrayfunctions":
+				//ResponseHandler::printDebugMessage( $result, "sql result" );
+				return [ Utils::exportArrayFunction( $result ), 'nowiki' => true ];
+			case "lua":
+				return $result;
+			default:
+				return "";
+		}
 	}
 }

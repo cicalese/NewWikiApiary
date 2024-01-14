@@ -121,4 +121,40 @@ class Utils {
 		}
 		return $ret;
 	}
+
+	/**
+	 * @param array $data
+	 * @param string $title
+	 * @param array $columnNames
+	 *
+	 * @return string
+	 */
+	public static function renderTable( array $data, string $title = '',
+		array $columnNames = [ 'Field', 'Values' ] ): string {
+		$result = '';
+		if ( !empty( $title ) ) {
+			$result .= '<h3>' . $title . '</h3>' . PHP_EOL;
+		}
+		foreach ( $data as $tableName => $tableData ) {
+			$ret = '{| class="wikitable"' . PHP_EOL;
+			$ret .= '|+ ' . $tableName . PHP_EOL;
+			$ret .= '|-' . PHP_EOL;
+			$ret .= '! ' . $columnNames[0] . ' !! ' . $columnNames[1] . PHP_EOL;
+			$ret .= '|-' . PHP_EOL;
+			foreach ( $tableData as $k => $v ) {
+				if ( is_array( $v ) ) {
+					foreach ( $v as $extraKey => $extraValue ) {
+						$ret .= '| ' . $extraKey . ' || ' . $extraValue . PHP_EOL;
+						$ret .= '|-' . PHP_EOL;
+					}
+				} else {
+					$ret .= '| ' . $k . ' || ' . $v . PHP_EOL;
+					$ret .= '|-' . PHP_EOL;
+				}
+			}
+			$ret .= '|}' . PHP_EOL;
+			$result .= $ret . PHP_EOL;
+		}
+		return $result;
+	}
 }
