@@ -50,8 +50,25 @@ Example :
 ```
 The example above will get all information about wiki with pageId 9 and render every information as a table
 
+#### action=stats
+
+It takes 2 arguments : 
+**for** ( either extensions or skins, currently only extensions is supported )
+
+**limit** ( return the top <limit> extensions )
+
+Example :
+```wikitext
+{{#w8y:action=stats
+|for=extensions
+|limit-10}}
+```
+The example above will get the top 10 most used extensions based on installments.
+
+
+
 ## Lua
-Call are the same as for the parser functions. Currently only the action "wiki" is supported
+Call are the same as for the parser functions.
 
 Create a Module:WikiApiary
 ```lua
@@ -69,6 +86,10 @@ You can then call the module as follows :
 
 ```wikitext
 {{#invoke:WikiApiary|w8y|action=wiki|id=9}}
+```
+
+```wikitext
+{{#invoke:WikiApiary|w8y|action=stats|for=extensions|limit=10}}
 ```
 
 The result will be a Lua table 

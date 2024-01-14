@@ -13,6 +13,7 @@ namespace WikiApiary;
 use MediaWiki\MediaWikiServices;
 use Parser;
 use WikiApiary\data\query\Query;
+use WikiApiary\data\query\Stats;
 use WikiApiary\data\query\Wiki;
 use WikiApiary\data\ResponseHandler;
 use WikiApiary\data\Utils;
@@ -43,14 +44,13 @@ class TagHooks {
 		Utils::$parameters = $this->extractOptions( array_slice( func_get_args(),
 				1 ) );
 		$action = Utils::getOptionSetting( 'action' );
-
+		$limit = Utils::getOptionSetting( 'limit' );
+		$format = Utils::getOptionSetting( 'format' );
 		switch ( $action ) {
 			case "query":
 				$query = new Query();
 				$get = Utils::getOptionSetting( 'return' );
 				$table = Utils::getOptionSetting( 'from' );
-				$limit = Utils::getOptionSetting( 'limit' );
-				$format = Utils::getOptionSetting( 'format' );
 				$where = Utils::getOptionSetting( 'where' );
 				$result = $query->doQuery( $get,
 					$table,
@@ -66,7 +66,25 @@ class TagHooks {
 					ResponseHandler::addMessage( wfMessage( 'w8y_missing-page-id' )->text() );
 				} else {
 					$query = new Wiki();
-					$result = $query->doQuery( intval( $pId ) );
+					if ( $format === null ) {
+						$format = 'table';
+					}
+					$result = $query->doQuery( intval( $pId ), $format );
+					ResponseHandler::printDebugMessage( $result,
+						"sql result" );
+				}
+				break;
+			case "stats":
+				$type = Utils::getOptionSetting( 'for' );
+				if ( $limit === null ) {
+					$limit = 10;
+				}
+				if ( $type !== null ) {
+					$query = new Stats();
+					if ( $format === null ) {
+						$format = 'table';
+					}
+					$result = $query->doQuery( $type, $limit, $format );
 					ResponseHandler::printDebugMessage( $result,
 						"sql result" );
 				}

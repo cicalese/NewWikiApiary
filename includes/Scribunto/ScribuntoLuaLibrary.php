@@ -2,6 +2,7 @@
 
 namespace WikiApiary\Scribunto;
 
+use WikiApiary\data\query\Stats;
 use WikiApiary\data\query\Wiki;
 use WikiApiary\data\Utils;
 
@@ -34,14 +35,33 @@ class ScribuntoLuaLibrary extends \Scribunto_LuaLibraryBase {
 		}
 
 		$action = Utils::getOptionSetting( 'action', true, $arguments );
-		$id = Utils::getOptionSetting( 'id', true, $arguments );
-
-		if ( $action === false || $id === false ) {
+		if ( $action === null ) {
 			return [];
 		}
-		$query = new Wiki();
-		$result = $query->doQuery( intval( $id ), 'lua' );
-		return [ $this->convertToLuaTable( $result ) ];
+		switch ( $action ) {
+			case "wiki":
+				$id = Utils::getOptionSetting( 'id', true, $arguments );
+				if ( $id === null ) {
+					return [];
+				}
+				$query = new Wiki();
+				$result = $query->doQuery( intval( $id ), 'lua' );
+				return [ $this->convertToLuaTable( $result ) ];
+			case "stats":
+				$type = Utils::getOptionSetting( 'for', true, $arguments );
+				if ( $type === null ) {
+					return [];
+				}
+				$limit = Utils::getOptionSetting( 'limit', true, $arguments );
+				if ( $limit === null ) {
+					$limit = 10;
+				}
+				$query = new Stats();
+				$result = $query->doQuery( $type, $limit, 'lua' );
+				return [ $this->convertToLuaTable( $result ) ];
+			default:
+				return [];
+		}
 	}
 
 	/**

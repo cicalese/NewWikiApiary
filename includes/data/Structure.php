@@ -17,6 +17,17 @@ class Structure {
 	 */
 	private array $dbStructure;
 
+	public const DBTABLE_WIKIS = 'w8y_wikis';
+	public const DBTABLE_EXTENSIONS = 'w8y_extensions';
+	public const DBTABLE_SKINS = 'w8y_skins';
+	public const DBTABLE_SCRAPE = 'w8y_scrape_records';
+	public const WIKI_PAGEID = 'w8y_wi_page_id';
+	public const WIKI_DEFUNCT = 'w8y_wi_is_defunct';
+	public const WIKI_LAST_SR_RCRD = 'w8y_wi_last_sr_id';
+	public const SR_ID = 'w8y_sr_sr_id';
+	public const EXTENSION_SCRAPE_ID = 'w8y_ex_sr_id';
+	public const SKIN_SCRAPE_ID = 'w8y_sk_sr_id';
+
 	/**
 	 *
 	 */
