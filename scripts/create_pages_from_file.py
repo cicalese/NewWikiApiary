@@ -81,7 +81,7 @@ def run():
 							session,
 							f'Creating/updating page for site {sitename} with URL {url}'
 						)
-						page = pywikibot.Page(site, sitename)
+						page = pywikibot.Page(site, 'Wiki:' + sitename)
 						if page.exists():
 							comment = 'Updated page'
 						else:
