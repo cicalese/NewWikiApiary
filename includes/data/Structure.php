@@ -27,6 +27,7 @@ class Structure {
 	public const SR_ID = 'w8y_sr_sr_id';
 	public const EXTENSION_SCRAPE_ID = 'w8y_ex_sr_id';
 	public const SKIN_SCRAPE_ID = 'w8y_sk_sr_id';
+	public const SCRAPE_MEDIAWIKI_VERSION = 'w8y_sr_mw_version';
 
 	/**
 	 *
