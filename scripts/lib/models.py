@@ -1,15 +1,17 @@
 import os
+from sqlalchemy import engine as sa_engine
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
-username = os.environ['WIKIAPIARY_DB_USERNAME']
-password = os.environ['WIKIAPIARY_DB_PASSWORD']
-host = os.environ['WIKIAPIARY_DB_HOST']
-port = os.environ['WIKIAPIARY_DB_PORT']
-db_schema = os.environ['WIKIAPIARY_DB_SCHEMA']
-engine = create_engine(
-	f'mysql+pymysql://{username}:{password}@{host}:{port}/{db_schema}'
+url = sa_engine.URL.create(
+	drivername = "mysql+pymysql",
+	username = os.environ['WIKIAPIARY_DB_USERNAME'],
+	password = os.environ['WIKIAPIARY_DB_PASSWORD'],
+	host = os.environ['WIKIAPIARY_DB_HOST'],
+	port = os.environ['WIKIAPIARY_DB_PORT'],
+	database = os.environ['WIKIAPIARY_DB_SCHEMA']
 )
+engine = create_engine(url)
 
 Base = declarative_base()
 Base.metadata.reflect(engine)
