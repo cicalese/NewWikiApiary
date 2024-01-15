@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 import requests
 import pywikibot
+from pywikibot.exceptions import InvalidTitleError, PageRelatedError
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 import time
@@ -77,31 +78,38 @@ def run():
 					url = line.strip()
 					sitename = get_sitename(url, args, errors, session)
 					if sitename:
-						log_message(
-							session,
-							f'Creating/updating page for site {sitename} with URL {url}'
-						)
-						page = pywikibot.Page(site, 'Wiki:' + sitename)
-						if page.exists():
-							comment = 'Updated page'
-						else:
-							comment = 'Created page'
-						page.text = f'{{{{Wiki|url={url}}}}}'
-						page.save(comment)
-						stmt = select(Wiki).where(Wiki.w8y_wi_page_id == page.pageid)
-						wiki = session.scalars(stmt).one_or_none()
-						if wiki:
-							wiki.w8y_wi_api_url = bytes(url, 'utf8')
-							wiki.w8y_wi_last_sr_id = None
-						else:
-							wiki = Wiki(
-								w8y_wi_page_id=page.pageid,
-								w8y_wi_api_url=bytes(url, 'utf8'),
-								w8y_wi_last_sr_id=None,
-								w8y_wi_is_defunct=False
+						try:
+							log_message(
+								session,
+								f'Creating/updating page for site {sitename} with URL {url}'
 							)
-							session.add(wiki)
-						session.commit()
+							page = pywikibot.Page(site, 'Wiki:' + sitename)
+							if page.exists():
+								comment = 'Updated page'
+							else:
+								comment = 'Created page'
+							page.text = f'{{{{Wiki|url={url}}}}}'
+							page.save(comment)
+							stmt = select(Wiki).where(Wiki.w8y_wi_page_id == page.pageid)
+							wiki = session.scalars(stmt).one_or_none()
+							if wiki:
+								wiki.w8y_wi_api_url = bytes(url, 'utf8')
+								wiki.w8y_wi_last_sr_id = None
+							else:
+								wiki = Wiki(
+									w8y_wi_page_id=page.pageid,
+									w8y_wi_api_url=bytes(url, 'utf8'),
+									w8y_wi_last_sr_id=None,
+									w8y_wi_is_defunct=False
+								)
+								session.add(wiki)
+							session.commit()
+						except (InvalidTitleError, PageRelatedError):
+							message = f'Error from {url} with {sitename}'
+							log_message(session, message)
+							if args.verbose:
+								print(message)
+							errors.append(url)
 		except KeyboardInterrupt:
 			pass
 		finally:
