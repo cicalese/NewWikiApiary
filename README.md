@@ -53,7 +53,8 @@ The example above will get all information about wiki with pageId 9 and render e
 #### action=stats
 
 It takes 2 arguments : 
-**for** ( either extensions or skins, currently only extensions is supported )
+
+**for** ( either extensions or skins )
 
 **limit** ( return the top <limit> extensions )
 
@@ -90,6 +91,10 @@ You can then call the module as follows :
 
 ```wikitext
 {{#invoke:WikiApiary|w8y|action=stats|for=extensions|limit=10}}
+```
+
+```wikitext
+{{#invoke:WikiApiary|w8y|action=stats|for=skins|limit=15}}
 ```
 
 The result will be a Lua table 

@@ -32,13 +32,38 @@ class Stats {
 	 *
 	 * @return array
 	 */
+	private function getTopSkins( int $limit, DBConnRef $dbr ): array {
+		$select = [ '*',
+			'count' => 'count(*)' ];
+		$from = Structure::DBTABLE_SKINS;
+		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->groupBy( 'w8y_sk_name' )
+			->orderBy( 'count',
+				'DESC' )->limit( $limit )->caller( __METHOD__ )->fetchResultSet();
+		$ret = [];
+		$t = 0;
+		if ( $res->numRows() > 0 ) {
+			while ( $row = $res->fetchRow() ) {
+				$ret[$t]['Count'] = $row['count'];
+				foreach ( $this->structure->returnTableColumns( Structure::DBTABLE_SKINS ) as $tName ) {
+					$ret[$t][$tName] = $row[$tName];
+				}
+				$t++;
+			}
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * @param int $limit
+	 * @param DBConnRef $dbr
+	 *
+	 * @return array
+	 */
 	private function getTopExtensions( int $limit, DBConnRef $dbr ): array {
 		$select = [ '*',
 			'count' => 'count(*)' ];
 		$from = Structure::DBTABLE_EXTENSIONS;
-		$selectOptions = [ 'GROUP BY' => 'w8y_ex_name',
-			'ORDER BY' => 'count DESC',
-			'LIMIT' => $limit ];
 		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->groupBy( 'w8y_ex_name' )
 			->orderBy( 'count',
 				'DESC' )->limit( $limit )->caller( __METHOD__ )->fetchResultSet();
@@ -74,21 +99,36 @@ class Stats {
 					$dbr );
 				break;
 			case "skins":
+				$result = $this->getTopSkins( $limit,
+					$dbr );
 				break;
 		}
 		$tables = [ 'count' ];
 
-		return match ( $export ) {
-			"table" => Utils::renderTable( $result,
-				'Top ' . $limit . ' used extensions',
-				array_merge( $tables,
-					$this->structure->returnTableColumns( Structure::DBTABLE_EXTENSIONS ) ),
-				true ),
-			"arrayfunctions" => [ Utils::exportArrayFunction( $result ),
-				'nowiki' => true ],
-			"lua" => $result,
-			default => "",
-		};
+		switch ( $export ) {
+			 case "table":
+				 if ( $action === "extensions" ) {
+					 return Utils::renderTable( $result,
+						 'Top ' . $limit . ' used extensions',
+						 array_merge( $tables,
+							 $this->structure->returnTableColumns( Structure::DBTABLE_EXTENSIONS ) ),
+						 true );
+				 }
+				 if ( $action === "skins" ) {
+					 return Utils::renderTable( $result,
+						 'Top ' . $limit . ' used skins',
+						 array_merge( $tables,
+							 $this->structure->returnTableColumns( Structure::DBTABLE_SKINS ) ),
+						 true );
+				 }
+				 break;
+				case "arrayfunctions":
+					return [ Utils::exportArrayFunction( $result ), 'nowiki' => true ];
+			case "lua":
+				return $result;
+			default:
+				return "";
+		}
+		return "";
 	}
-
 }
