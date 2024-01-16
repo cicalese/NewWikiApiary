@@ -11,7 +11,7 @@ from utils import log_message
 
 
 def get_args():
-	parser = ArgumentParser(prog='Create', description='creates pages in wiki corresponding to URLs in file')
+	parser = ArgumentParser(prog='Create', description='creates Wiki records in the database corresponding to the pages that were created in the wiki')
 	parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
 	return parser.parse_args()
 

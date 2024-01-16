@@ -92,10 +92,16 @@ def scrape_site(url, page_id, args, session):
 
 	general = query['general']
 	mw_version = re.sub('^MediaWiki ', '', general['generator'])
-	db_version = general['dbtype'] + ': ' + general['dbversion']
-	php_version = general['phpversion'] + '(' + general['phpsapi'] + ')'
+	if 'dbtype' in general and 'dbversion' in general:
+		db_version = general['dbtype'] + ': ' + general['dbversion']
+	else:
+		db_version = ""
+	if 'phpversion' in general and 'phpsapi' in general:
+		php_version = general['phpversion'] + '(' + general['phpsapi'] + ')'
+	else:
+		php_version = ""
 	language = general['lang']
-	if 'logo' in general:
+	if 'logo' in general and len(general['logo']) < 256:
 		logo = general['logo']
 	else:
 		logo = ''
@@ -110,7 +116,10 @@ def scrape_site(url, page_id, args, session):
 		extensions = query['extensions']
 		versions = create_version_records(extensions)
 	else:
-		versions = None
+		versions = {
+			'skins': [],
+			'extensions': []
+		}
 
 	scrape = ScrapeRecord(
 		w8y_sr_page_id=page_id,

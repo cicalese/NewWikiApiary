@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, and_
 import sys
 import time
 sys.path.append('./lib')
@@ -10,13 +10,26 @@ from utils import log_message
 
 
 def get_args():
-	parser = ArgumentParser(prog='Create', description='creates pages in wiki corresponding to URLs in file')
+	parser = ArgumentParser(prog='Create', description='scrapes the data for rows in Wikis and stores the data in the database')
+	parser.add_argument("-n", "--new", action="store_true", help="scrape only new pages (those that have not been scraped before)")
 	parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
 	return parser.parse_args()
 
 
-def get_wikis(session):
-	stmt = select(Wiki).where(Wiki.w8y_wi_is_defunct == False)
+def get_wikis(session, new_wikis):
+	if new_wikis:
+		stmt = select(Wiki).where(
+			and_(
+				Wiki.w8y_wi_last_sr_id.is_not(None),
+				Wiki.w8y_wi_is_defunct == False
+			)
+		)
+	else:
+		stmt = select(Wiki).where(
+			Wiki.w8y_wi_is_defunct == False
+		).order_by(
+			Wiki.w8y_wi_last_sr_id
+		)
 	return session.scalars(stmt)
 
 
@@ -27,7 +40,7 @@ def run():
 	error_count = 0
 	with Session(engine) as session:
 		try:
-			wikis = get_wikis(session)
+			wikis = get_wikis(session, args.new)
 			message = 'Starting scraping wikis.'
 			log_message(session, message)
 			if args.verbose:
