@@ -1,4 +1,5 @@
 from models import ScrapeRecord, VersionRecord, Skin, Extension
+from sqlalchemy import select
 from utils import log_message
 import json
 import re
@@ -32,11 +33,45 @@ def get_siteinfo(url, args, session):
 		return None
 
 
+def last_versions_match(session, last_sr_id, skin_versions, extension_versions):
+	stmt = select(ScrapeRecord).where(ScrapeRecord.w8y_sr_sr_id == last_sr_id)
+	sr = session.scalars(stmt).one_or_none()
+	if sr is None:
+		return False, None
+	vr_id = sr.w8y_sr_vr_id
+	if vr_id is None:
+		return False, None
+
+	stmt = select(Skin).where(Skin.w8y_sk_vr_id == vr_id)
+	last_skins = session.scalars(stmt)
+	count = 0
+	for skin in last_skins:
+		name = skin.w8y_sk_name
+		if name not in skin_versions or skin.w8y_sk_version != skin_versions[name]:
+			return False, None
+		count += 1
+	if len(skin_versions) != count:
+		return False, None
+
+	stmt = select(Extension).where(Extension.w8y_ex_vr_id == vr_id)
+	extensions = session.scalars(stmt)
+	count = 0
+	for extension in last_extensions:
+		name = extension.w8y_ex_name
+		if name not in extension_versions or extension.w8y_ex_version != extension_versions[name]:
+			return False, None
+		count += 1
+	if len(extension_versions) != count:
+		return False, None
+
+	return True, vr_id
+
+
 def create_version_records(session, last_sr_id, components):
 	skins = []
-	skin_names = []
+	skin_versions = {}
 	extensions = []
-	extension_names = []
+	extension_versions = {}
 
 	for comp in components:
 		if 'name' in comp and 'type' in comp:
@@ -53,21 +88,25 @@ def create_version_records(session, last_sr_id, components):
 			else:
 				url = None
 			if comp['type'] == 'skin':
-				if name not in skin_names:
+				if name not in skin_versions:
 					skins.append({
 						'name': name,
 						'version': version,
 						'url': url
 					})
-					skin_names.append(name)
+					skin_versions[name] = version
 			else:
-				if name not in extension_names:
+				if name not in extension_versions:
 					extensions.append({
 						'name': name,
 						'version': version,
 						'url': url
 					})
-					extension_names.append(name)
+					extension_versions[name] = version
+
+	match, last_vr_id = last_versions_match(session, last_sr_id, skin_versions, extension_versions)
+	if match:
+		return last_vr_id
 
 	version_record = VersionRecord()
 	session.add(version_record)
