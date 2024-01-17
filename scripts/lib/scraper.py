@@ -54,7 +54,7 @@ def last_versions_match(session, last_sr_id, skin_versions, extension_versions):
 		return False, None
 
 	stmt = select(Extension).where(Extension.w8y_ex_vr_id == vr_id)
-	extensions = session.scalars(stmt)
+	last_extensions = session.scalars(stmt)
 	count = 0
 	for extension in last_extensions:
 		name = extension.w8y_ex_name

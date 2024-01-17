@@ -21,7 +21,7 @@ def get_wikis(session, new_wikis):
 	if new_wikis:
 		stmt = select(Wiki).where(
 			and_(
-				Wiki.w8y_wi_last_sr_id.is_not(None),
+				Wiki.w8y_wi_last_sr_id.is_(None),
 				Wiki.w8y_wi_is_defunct == False
 			)
 		)
