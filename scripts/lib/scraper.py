@@ -141,11 +141,16 @@ def scrape_site(url, page_id, last_sr_id, args, session):
 	timestamp = time.time()
 
 	if not data or 'query' not in data or 'general' not in data['query'] or 'statistics' not in data['query']:
+		version_record = VersionRecord()
+		session.add(version_record)
+		session.commit()
+		vr_id = version_record.w8y_vr_vr_id
 		scrape = ScrapeRecord(
 			w8y_sr_page_id=page_id,
 			w8y_sr_api_url=bytes(url, 'utf-8'),
 			w8y_sr_timestamp=timestamp,
-			w8y_sr_is_alive=False
+			w8y_sr_is_alive=False,
+			w8y_sr_vr_id=vr_id
 		)
 		session.add(scrape)
 		session.commit()
@@ -178,7 +183,10 @@ def scrape_site(url, page_id, last_sr_id, args, session):
 	if 'extensions' in query:
 		vr_id = create_version_records(session, last_sr_id, query['extensions'])
 	else:
-		vr_id = None
+		version_record = VersionRecord()
+		session.add(version_record)
+		session.commit()
+		vr_id = version_record.w8y_vr_vr_id
 
 	scrape = ScrapeRecord(
 		w8y_sr_page_id=page_id,
