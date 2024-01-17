@@ -25,6 +25,10 @@ class ScrapeRecord(Base):
 	__table__ = Base.metadata.tables['w8y_scrape_records']
 
 
+class VersionRecord(Base):
+	__table__ = Base.metadata.tables['w8y_version_records']
+
+
 class Skin(Base):
 	__table__ = Base.metadata.tables['w8y_skins']
 

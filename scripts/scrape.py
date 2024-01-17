@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_
+import pywikibot
 import sys
 import time
 sys.path.append('./lib')
@@ -33,11 +34,27 @@ def get_wikis(session, new_wikis):
 	return session.scalars(stmt)
 
 
+def purge(site, session, args, pageids):
+	params = {
+		'action': 'purge',
+		'pageids': pageids
+	}
+	request = pywikibot.data.api.Request(site=site, parameters=params)
+	result = request.submit()
+	if 'purge' in result:
+		for page in result['purge']:
+			if 'title' in page:
+				message = 'Purged page %s' % page['title']
+				log_message(session, message)
+				if args.verbose > 1:
+					print(message)
+
 def run():
 	args = get_args()
 	start_time = time.time()
 	good_count = 0
 	error_count = 0
+	site = pywikibot.Site()
 	with Session(engine) as session:
 		try:
 			wikis = get_wikis(session, args.new)
@@ -59,7 +76,7 @@ def run():
 				if args.verbose > 1:
 					message = f'Scraping {url}'
 					print(message)
-				(sr_id, error) = scrape_site(url, page_id, args, session)
+				(sr_id, error) = scrape_site(url, page_id, wiki.w8y_wi_last_sr_id, args, session)
 				wiki.w8y_wi_last_sr_id = sr_id
 				session.add(wiki)
 				session.commit()
@@ -67,6 +84,7 @@ def run():
 					error_count += 1
 				else:
 					good_count += 1
+					purge(site, session, args, page_id)
 		except KeyboardInterrupt:
 			session.rollback()
 		finally:

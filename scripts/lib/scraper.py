@@ -1,4 +1,4 @@
-from models import ScrapeRecord, Skin, Extension
+from models import ScrapeRecord, VersionRecord, Skin, Extension
 from utils import log_message
 import json
 import re
@@ -32,11 +32,12 @@ def get_siteinfo(url, args, session):
 		return None
 
 
-def create_version_records(components):
+def create_version_records(session, last_sr_id, components):
 	skins = []
 	skin_names = []
 	extensions = []
 	extension_names = []
+
 	for comp in components:
 		if 'name' in comp and 'type' in comp:
 			name = bytes(comp['name'], 'utf-8')
@@ -67,13 +68,36 @@ def create_version_records(components):
 						'url': url
 					})
 					extension_names.append(name)
-	return {
-		'skins': skins,
-		'extensions': extensions
-	}
+
+	version_record = VersionRecord()
+	session.add(version_record)
+	session.commit()
+	vr_id = version_record.w8y_vr_vr_id
+
+	for skin in skins:
+		session.add(
+			Skin(
+				w8y_sk_vr_id=vr_id,
+				w8y_sk_name=skin['name'],
+				w8y_sk_version=skin['version'],
+				w8y_sk_doc_url=skin['url']
+			)
+		)
+
+	for extension in extensions:
+		session.add(
+			Extension(
+				w8y_ex_vr_id=vr_id,
+				w8y_ex_name=extension['name'],
+				w8y_ex_version=extension['version'],
+				w8y_ex_doc_url=extension['url']
+			)
+		)
+
+	return vr_id
 
 
-def scrape_site(url, page_id, args, session):
+def scrape_site(url, page_id, last_sr_id, args, session):
 	data = get_siteinfo(url, args, session)
 	timestamp = time.time()
 
@@ -113,19 +137,16 @@ def scrape_site(url, page_id, args, session):
 	statistics = query['statistics']
 
 	if 'extensions' in query:
-		extensions = query['extensions']
-		versions = create_version_records(extensions)
+		vr_id = create_version_records(session, last_sr_id, query['extensions'])
 	else:
-		versions = {
-			'skins': [],
-			'extensions': []
-		}
+		vr_id = None
 
 	scrape = ScrapeRecord(
 		w8y_sr_page_id=page_id,
 		w8y_sr_api_url=bytes(url, 'utf-8'),
 		w8y_sr_timestamp=timestamp,
 		w8y_sr_is_alive=True,
+		w8y_sr_vr_id=vr_id,
 		w8y_sr_mw_version=bytes(mw_version, 'utf-8'),
 		w8y_sr_db_version=bytes(db_version, 'utf-8'),
 		w8y_sr_php_version=bytes(php_version, 'utf-8'),
@@ -138,24 +159,4 @@ def scrape_site(url, page_id, args, session):
 	session.add(scrape)
 	session.commit()
 	sr_id = scrape.w8y_sr_sr_id
-
-	for skin in versions['skins']:
-		session.add(
-			Skin(
-				w8y_sk_sr_id=sr_id,
-				w8y_sk_name=skin['name'],
-				w8y_sk_version=skin['version'],
-				w8y_sk_doc_url=skin['url']
-			)
-		)
-	for extension in versions['extensions']:
-		session.add(
-			Extension(
-				w8y_ex_sr_id=sr_id,
-				w8y_ex_name=extension['name'],
-				w8y_ex_version=extension['version'],
-				w8y_ex_doc_url=extension['url']
-			)
-		)
-
 	return sr_id, False
