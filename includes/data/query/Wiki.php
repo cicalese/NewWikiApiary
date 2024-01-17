@@ -34,10 +34,10 @@ class Wiki {
 	 *
 	 * @return array
 	 */
-	private function getExtensions( int $scrapeId, DBConnRef $dbr ): array {
+	private function getExtensions( int $versionId, DBConnRef $dbr ): array {
 		$select = [ '*' ];
 		$from = Structure::DBTABLE_EXTENSIONS;
-		$where = [ Structure::EXTENSION_SCRAPE_ID => $scrapeId ];
+		$where = [ Structure::EXTENSION_VERSION_ID => $versionId ];
 		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->
 		where( $where )->caller( __METHOD__ )->fetchResultSet();
 
@@ -60,10 +60,10 @@ class Wiki {
 	 *
 	 * @return array
 	 */
-	private function getSkins( int $scrapeId, DBConnRef $dbr ): array {
+	private function getSkins( int $versionId, DBConnRef $dbr ): array {
 		$select = [ '*' ];
 		$from = Structure::DBTABLE_SKINS;
-		$where = [ Structure::SKIN_SCRAPE_ID => $scrapeId ];
+		$where = [ Structure::SKIN_VERSION_ID => $versionId ];
 		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->
 		where( $where )->caller( __METHOD__ )->fetchResultSet();
 
@@ -135,8 +135,8 @@ class Wiki {
 			return $result;
 		}
 		$result['wiki']['pageTitle'] = Utils::getPageTitleFromID( $pageID );
-		$result['extensions'] = $this->getExtensions( $result['scrape'][Structure::SR_ID], $dbr );
-		$result['skins'] = $this->getSkins( $result['scrape'][Structure::SR_ID], $dbr );
+		$result['extensions'] = $this->getExtensions( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
+		$result['skins'] = $this->getSkins( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
 
 		return match ( $export ) {
 			"table" => Utils::renderTable( $result,

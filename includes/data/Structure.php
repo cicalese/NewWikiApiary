@@ -25,8 +25,9 @@ class Structure {
 	public const WIKI_DEFUNCT = 'w8y_wi_is_defunct';
 	public const WIKI_LAST_SR_RCRD = 'w8y_wi_last_sr_id';
 	public const SR_ID = 'w8y_sr_sr_id';
-	public const EXTENSION_SCRAPE_ID = 'w8y_ex_sr_id';
-	public const SKIN_SCRAPE_ID = 'w8y_sk_sr_id';
+	public const SCRAPE_VR_ID = 'w8y_sr_vr_id';
+	public const EXTENSION_VERSION_ID = 'w8y_ex_vr_id';
+	public const SKIN_VERSION_ID = 'w8y_sk_vr_id';
 	public const SCRAPE_MEDIAWIKI_VERSION = 'w8y_sr_mw_version';
 
 	/**
