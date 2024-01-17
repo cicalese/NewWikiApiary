@@ -40,30 +40,28 @@ class MediaWiki {
 		$version3 = false;
 		$where = false;
 		if ( isset( $explodedVersions[0] ) ) {
-			$where .= $explodedVersions[0] . '.';
+			$where .= $explodedVersions[0];
 		}
 		if ( isset( $explodedVersions[1] ) ) {
-			$where .= $explodedVersions[1] . '.';
+			$where .= '.' . $explodedVersions[1];
 		}
 		if ( isset( $explodedVersions[2] ) ) {
-			$where .= $explodedVersions[2] . '.';
+			$where .= '.' . $explodedVersions[2];
 		}
-		$where = substr( $where, 0, -1 );
 		$where = [ Structure::SCRAPE_MEDIAWIKI_VERSION => $where ];
-		$select = [ Structure::SCRAPE_MEDIAWIKI_VERSION,
+		$select = [ Structure::SCRAPE_MEDIAWIKI_VERSION, Structure::SR_ID,
 			'count' => 'count(*)' ];
 		$from = Structure::DBTABLE_SCRAPE;
-		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->wh->groupBy( 'w8y_ex_name' )
-			->orderBy( 'count',
+		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->where( $where )->
+		groupBy( Structure::SCRAPE_MEDIAWIKI_VERSION )->orderBy( 'count',
 				'DESC' )->limit( $limit )->caller( __METHOD__ )->fetchResultSet();
 		$ret = [];
 		$t = 0;
 		if ( $res->numRows() > 0 ) {
 			while ( $row = $res->fetchRow() ) {
 				$ret[$t]['Count'] = $row['count'];
-				foreach ( $this->structure->returnTableColumns( Structure::DBTABLE_EXTENSIONS ) as $tName ) {
-					$ret[$t][$tName] = $row[$tName];
-				}
+				$ret[$t]['version'] = $row[ Structure::SCRAPE_MEDIAWIKI_VERSION ];
+				$ret[$t]['sid'] = $row[ Structure::SR_ID ];
 				$t++;
 			}
 		}
@@ -79,6 +77,11 @@ class MediaWiki {
 	 * @return mixed
 	 */
 	public function doQuery( string $version, int $limit = 10, string $export = "table" ): mixed {
+		/*
+		 * MediaWiki version - given major version:
+	•	also major/minor/special versions associated with major version
+	•	list of wikis actively using with version
+		 */
 		$lb = MediaWikiServices::getInstance()->getDBLoadBalancer();
 		$dbr = $lb->getConnectionRef( DB_REPLICA );
 		$result = [];
