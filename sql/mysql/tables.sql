@@ -17,6 +17,7 @@ CREATE TABLE /*_*/w8y_scrape_records (
   w8y_sr_api_url VARCHAR(255) NOT NULL,
   w8y_sr_timestamp INT UNSIGNED NOT NULL,
   w8y_sr_is_alive TINYINT(1) NOT NULL,
+  w8y_sr_vr_id INT UNSIGNED NOT NULL,
   w8y_sr_mw_version VARCHAR(255) DEFAULT NULL,
   w8y_sr_db_version VARCHAR(255) DEFAULT NULL,
   w8y_sr_php_version VARCHAR(255) DEFAULT NULL,
@@ -29,21 +30,27 @@ CREATE TABLE /*_*/w8y_scrape_records (
 ) /*$wgDBTableOptions*/;
 
 
+CREATE TABLE /*_*/w8y_version_records (
+  w8y_vr_vr_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
+  PRIMARY KEY(w8y_vr_vr_id)
+) /*$wgDBTableOptions*/;
+
+
 CREATE TABLE /*_*/w8y_skins (
-  w8y_sk_sr_id INT UNSIGNED NOT NULL,
+  w8y_sk_vr_id INT UNSIGNED NOT NULL,
   w8y_sk_name VARCHAR(255) NOT NULL,
   w8y_sk_version VARCHAR(255) DEFAULT NULL,
   w8y_sk_doc_url VARCHAR(255) DEFAULT NULL,
-  PRIMARY KEY(w8y_sk_sr_id, w8y_sk_name)
+  PRIMARY KEY(w8y_sk_vr_id, w8y_sk_name)
 ) /*$wgDBTableOptions*/;
 
 
 CREATE TABLE /*_*/w8y_extensions (
-  w8y_ex_sr_id INT UNSIGNED NOT NULL,
+  w8y_ex_vr_id INT UNSIGNED NOT NULL,
   w8y_ex_name VARCHAR(255) NOT NULL,
   w8y_ex_version VARCHAR(255) DEFAULT NULL,
   w8y_ex_doc_url VARCHAR(255) DEFAULT NULL,
-  PRIMARY KEY(w8y_ex_sr_id, w8y_ex_name)
+  PRIMARY KEY(w8y_ex_vr_id, w8y_ex_name)
 ) /*$wgDBTableOptions*/;
 
 

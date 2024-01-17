@@ -57,6 +57,11 @@
 				"options": { "notnull": true }
 			},
 			{
+				"name": "w8y_sr_vr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
 				"name": "w8y_sr_mw_version",
 				"type": "string",
 				"options": { "notnull": false }
@@ -103,10 +108,24 @@
 		]
 	},
 	{
+		"name": "w8y_version_records",
+		"columns": [
+			{
+				"name": "w8y_vr_vr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"w8y_vr_vr_id"
+		]
+	},
+	{
 		"name": "w8y_skins",
 		"columns": [
 			{
-				"name": "w8y_sk_sr_id",
+				"name": "w8y_sk_vr_id",
 				"type": "integer",
 				"options": { "unsigned": true, "notnull": true }
 			},
@@ -128,14 +147,14 @@
 		],
 		"indexes": [],
 		"pk": [
-			"w8y_sk_sr_id", "w8y_sk_name"
+			"w8y_sk_vr_id", "w8y_sk_name"
 		]
 	},
 	{
 		"name": "w8y_extensions",
 		"columns": [
 			{
-				"name": "w8y_ex_sr_id",
+				"name": "w8y_ex_vr_id",
 				"type": "integer",
 				"options": { "unsigned": true, "notnull": true }
 			},
@@ -157,7 +176,7 @@
 		],
 		"indexes": [],
 		"pk": [
-			"w8y_ex_sr_id", "w8y_ex_name"
+			"w8y_ex_vr_id", "w8y_ex_name"
 		]
 	},
 	{
