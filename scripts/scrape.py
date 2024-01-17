@@ -11,7 +11,7 @@ from utils import log_message
 
 
 def get_args():
-	parser = ArgumentParser(prog='Create', description='scrapes the data for rows in Wikis and stores the data in the database')
+	parser = ArgumentParser(prog='Scrape', description='scrapes the data for rows in Wikis and stores the data in the database')
 	parser.add_argument("-n", "--new", action="store_true", help="scrape only new pages (those that have not been scraped before)")
 	parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
 	return parser.parse_args()
@@ -48,6 +48,7 @@ def purge(site, session, args, pageids):
 				log_message(session, message)
 				if args.verbose > 1:
 					print(message)
+
 
 def run():
 	args = get_args()
