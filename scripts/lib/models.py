@@ -29,12 +29,20 @@ class VersionRecord(Base):
 	__table__ = Base.metadata.tables['w8y_version_records']
 
 
-class Skin(Base):
-	__table__ = Base.metadata.tables['w8y_skins']
+class SkinLink(Base):
+	__table__ = Base.metadata.tables['w8y_skin_links']
 
 
-class Extension(Base):
-	__table__ = Base.metadata.tables['w8y_extensions']
+class SkinData(Base):
+	__table__ = Base.metadata.tables['w8y_skin_data']
+
+
+class ExtensionLink(Base):
+	__table__ = Base.metadata.tables['w8y_extension_links']
+
+
+class ExtensionData(Base):
+	__table__ = Base.metadata.tables['w8y_extension_data']
 
 
 class Log(Base):
