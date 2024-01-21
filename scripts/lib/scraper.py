@@ -1,4 +1,4 @@
-from models import ScrapeRecord, VersionRecord, Skin, Extension
+from models import ScrapeRecord, VersionRecord, SkinLink, SkinData, ExtensionLink, ExtensionData
 from sqlalchemy import select
 from utils import log_message
 import json
@@ -42,11 +42,11 @@ def last_versions_match(session, last_sr_id, skin_versions, extension_versions):
 	if vr_id is None:
 		return False, None
 
-	stmt = select(SkinLink, SkinData).join_from(
+	stmt = select(SkinData).join_from(
 		SkinLink,
 		SkinData,
-		SkinLink.w8y_sl_sd_id = SkinData.wy8_sd_sd_id
-	)).where(SkinLink.w8y_sl_vr_id == vr_id)
+		SkinLink.w8y_sl_sd_id == SkinData.w8y_sd_sd_id
+	).where(SkinLink.w8y_sl_vr_id == vr_id)
 	last_skins = session.scalars(stmt)
 	count = 0
 	for skin in last_skins:
@@ -57,11 +57,11 @@ def last_versions_match(session, last_sr_id, skin_versions, extension_versions):
 	if len(skin_versions) != count:
 		return False, None
 
-	stmt = select(ExtensionLink, ExtensionData).join_from(
+	stmt = select(ExtensionData).join_from(
 		ExtensionLink,
 		ExtensionData,
-		ExtensionLink.w8y_el_ed_id = ExtensionData.wy8_ed_ed_id
-	)).where(ExtensionLink.w8y_el_vr_id == vr_id)
+		ExtensionLink.w8y_el_ed_id == ExtensionData.w8y_ed_ed_id
+	).where(ExtensionLink.w8y_el_vr_id == vr_id)
 	last_extensions = session.scalars(stmt)
 	count = 0
 	for extension in last_extensions:
@@ -136,9 +136,9 @@ def create_version_records(session, last_sr_id, components):
 			)
 			session.add(skin_data)
 			session.commit()
-		skin_link = SkinkLink(
+		skin_link = SkinLink(
 			w8y_sl_vr_id = vr_id,
-			w8y_sl_sd_id = skin_data.wy8_sd_sd_id
+			w8y_sl_sd_id = skin_data.w8y_sd_sd_id
 		)
 		session.add(skin_link)
 
@@ -157,9 +157,9 @@ def create_version_records(session, last_sr_id, components):
 			)
 			session.add(extension_data)
 			session.commit()
-		extension_link = ExtensionkLink(
+		extension_link = ExtensionLink(
 			w8y_el_vr_id = vr_id,
-			w8y_el_ed_id = extension_data.wy8_ed_ed_id
+			w8y_el_ed_id = extension_data.w8y_ed_ed_id
 		)
 		session.add(extension_link)
 
