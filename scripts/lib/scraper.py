@@ -1,4 +1,4 @@
-from models import ScrapeRecord, VersionRecord, SkinLink, SkinData, ExtensionLink, ExtensionData
+from models import ScrapeRecord, LastVersionRecordId, SkinLink, SkinData, ExtensionLink, ExtensionData
 from sqlalchemy import select
 from utils import log_message
 import json
@@ -116,10 +116,18 @@ def create_version_records(session, last_sr_id, components):
 	if match:
 		return last_vr_id
 
-	version_record = VersionRecord()
-	session.add(version_record)
+	stmt = select(LastVersionRecordId)
+	last_version_record_id = session.scalars(stmt).one_or_none()
+	if last_version_record_id is None:
+		vr_id = 1
+		last_version_record_id = LastVersionRecordId(
+			w8y_vr_vr_id=vr_id
+		)
+		session.add(last_version_record_id)
+	else:
+		vr_id = last_version_record_id.w8y_vr_vr_id + 1
+		last_version_record_id.w8y_vr_vr_id = vr_id
 	session.commit()
-	vr_id = version_record.w8y_vr_vr_id
 
 	for skin in skins:
 		stmt = select(SkinData).where(

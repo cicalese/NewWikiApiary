@@ -39,8 +39,8 @@ CREATE TABLE /*_*/w8y_scrape_records (
 ) /*$wgDBTableOptions*/;
 
 
-CREATE TABLE /*_*/w8y_version_records (
-  w8y_vr_vr_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
+CREATE TABLE /*_*/w8y_last_version_record_id (
+  w8y_vr_vr_id INT UNSIGNED NOT NULL,
   PRIMARY KEY(w8y_vr_vr_id)
 ) /*$wgDBTableOptions*/;
 

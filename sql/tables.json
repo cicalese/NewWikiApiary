@@ -131,12 +131,12 @@
 		]
 	},
 	{
-		"name": "w8y_version_records",
+		"name": "w8y_last_version_record_id",
 		"columns": [
 			{
 				"name": "w8y_vr_vr_id",
 				"type": "integer",
-				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+				"options": { "unsigned": true, "notnull": true }
 			}
 		],
 		"indexes": [],

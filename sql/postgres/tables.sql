@@ -44,8 +44,8 @@ CREATE INDEX w8y_sr_php_version ON w8y_scrape_records (
 );
 
 
-CREATE TABLE w8y_version_records (
-  w8y_vr_vr_id SERIAL NOT NULL,
+CREATE TABLE w8y_last_version_record_id (
+  w8y_vr_vr_id INT NOT NULL,
   PRIMARY KEY(w8y_vr_vr_id)
 );
 

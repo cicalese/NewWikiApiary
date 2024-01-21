@@ -43,8 +43,9 @@ CREATE INDEX w8y_sr_php_version ON /*_*/w8y_scrape_records (
 );
 
 
-CREATE TABLE /*_*/w8y_version_records (
-  w8y_vr_vr_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+CREATE TABLE /*_*/w8y_last_version_record_id (
+  w8y_vr_vr_id INTEGER UNSIGNED NOT NULL,
+  PRIMARY KEY(w8y_vr_vr_id)
 );
 
 
