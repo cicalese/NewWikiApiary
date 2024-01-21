@@ -1,4 +1,4 @@
-from models import ScrapeRecord, VersionRecord, Skin, Extension
+from models import ScrapeRecord, VersionRecord, SkinLink, SkinData, ExtensionLink, ExtensionData
 from sqlalchemy import select
 from utils import log_message
 import json
@@ -42,23 +42,31 @@ def last_versions_match(session, last_sr_id, skin_versions, extension_versions):
 	if vr_id is None:
 		return False, None
 
-	stmt = select(Skin).where(Skin.w8y_sk_vr_id == vr_id)
+	stmt = select(SkinData).join_from(
+		SkinLink,
+		SkinData,
+		SkinLink.w8y_sl_sd_id == SkinData.w8y_sd_sd_id
+	).where(SkinLink.w8y_sl_vr_id == vr_id)
 	last_skins = session.scalars(stmt)
 	count = 0
 	for skin in last_skins:
-		name = skin.w8y_sk_name
-		if name not in skin_versions or skin.w8y_sk_version != skin_versions[name]:
+		name = skin.w8y_sd_name
+		if name not in skin_versions or skin.w8y_sd_version != skin_versions[name]:
 			return False, None
 		count += 1
 	if len(skin_versions) != count:
 		return False, None
 
-	stmt = select(Extension).where(Extension.w8y_ex_vr_id == vr_id)
+	stmt = select(ExtensionData).join_from(
+		ExtensionLink,
+		ExtensionData,
+		ExtensionLink.w8y_el_ed_id == ExtensionData.w8y_ed_ed_id
+	).where(ExtensionLink.w8y_el_vr_id == vr_id)
 	last_extensions = session.scalars(stmt)
 	count = 0
 	for extension in last_extensions:
-		name = extension.w8y_ex_name
-		if name not in extension_versions or extension.w8y_ex_version != extension_versions[name]:
+		name = extension.w8y_ed_name
+		if name not in extension_versions or extension.w8y_ed_version != extension_versions[name]:
 			return False, None
 		count += 1
 	if len(extension_versions) != count:
@@ -114,24 +122,46 @@ def create_version_records(session, last_sr_id, components):
 	vr_id = version_record.w8y_vr_vr_id
 
 	for skin in skins:
-		session.add(
-			Skin(
-				w8y_sk_vr_id=vr_id,
-				w8y_sk_name=skin['name'],
-				w8y_sk_version=skin['version'],
-				w8y_sk_doc_url=skin['url']
-			)
+		stmt = select(SkinData).where(
+			(SkinData.w8y_sd_name == skin['name']) &
+			(SkinData.w8y_sd_version == skin['version']) &
+			(SkinData.w8y_sd_doc_url == skin['url'])
 		)
+		skin_data = session.scalars(stmt).one_or_none()
+		if skin_data is None:
+			skin_data = SkinData(
+				w8y_sd_name=skin['name'],
+				w8y_sd_version=skin['version'],
+				w8y_sd_doc_url=skin['url']
+			)
+			session.add(skin_data)
+			session.commit()
+		skin_link = SkinLink(
+			w8y_sl_vr_id = vr_id,
+			w8y_sl_sd_id = skin_data.w8y_sd_sd_id
+		)
+		session.add(skin_link)
 
 	for extension in extensions:
-		session.add(
-			Extension(
-				w8y_ex_vr_id=vr_id,
-				w8y_ex_name=extension['name'],
-				w8y_ex_version=extension['version'],
-				w8y_ex_doc_url=extension['url']
-			)
+		stmt = select(ExtensionData).where(
+			(ExtensionData.w8y_ed_name == extension['name']) &
+			(ExtensionData.w8y_ed_version == extension['version']) &
+			(ExtensionData.w8y_ed_doc_url == extension['url'])
 		)
+		extension_data = session.scalars(stmt).one_or_none()
+		if extension_data is None:
+			extension_data = ExtensionData(
+				w8y_ed_name=extension['name'],
+				w8y_ed_version=extension['version'],
+				w8y_ed_doc_url=extension['url']
+			)
+			session.add(extension_data)
+			session.commit()
+		extension_link = ExtensionLink(
+			w8y_el_vr_id = vr_id,
+			w8y_el_ed_id = extension_data.w8y_ed_ed_id
+		)
+		session.add(extension_link)
 
 	return vr_id
 
@@ -141,16 +171,11 @@ def scrape_site(url, page_id, last_sr_id, args, session):
 	timestamp = time.time()
 
 	if not data or 'query' not in data or 'general' not in data['query'] or 'statistics' not in data['query']:
-		version_record = VersionRecord()
-		session.add(version_record)
-		session.commit()
-		vr_id = version_record.w8y_vr_vr_id
 		scrape = ScrapeRecord(
 			w8y_sr_page_id=page_id,
 			w8y_sr_api_url=bytes(url, 'utf-8'),
 			w8y_sr_timestamp=timestamp,
-			w8y_sr_is_alive=False,
-			w8y_sr_vr_id=vr_id
+			w8y_sr_is_alive=False
 		)
 		session.add(scrape)
 		session.commit()
@@ -163,11 +188,11 @@ def scrape_site(url, page_id, last_sr_id, args, session):
 	if 'dbtype' in general and 'dbversion' in general:
 		db_version = general['dbtype'] + ': ' + general['dbversion']
 	else:
-		db_version = ""
+		db_version = ''
 	if 'phpversion' in general and 'phpsapi' in general:
 		php_version = general['phpversion'] + '(' + general['phpsapi'] + ')'
 	else:
-		php_version = ""
+		php_version = ''
 	language = general['lang']
 	if 'logo' in general and len(general['logo']) < 256:
 		logo = general['logo']
@@ -183,10 +208,7 @@ def scrape_site(url, page_id, last_sr_id, args, session):
 	if 'extensions' in query:
 		vr_id = create_version_records(session, last_sr_id, query['extensions'])
 	else:
-		version_record = VersionRecord()
-		session.add(version_record)
-		session.commit()
-		vr_id = version_record.w8y_vr_vr_id
+		vr_id = None
 
 	scrape = ScrapeRecord(
 		w8y_sr_page_id=page_id,

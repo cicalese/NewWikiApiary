@@ -23,7 +23,9 @@
 				"options": { "notnull": true }
 			}
 		],
-		"indexes": [],
+		"indexes": [
+			{ "name": "w8y_wi_last_sr_id", "columns": [ "w8y_wi_last_sr_id" ], "unique": false }
+		],
 		"pk": [
 			"w8y_wi_page_id"
 		]
@@ -59,7 +61,7 @@
 			{
 				"name": "w8y_sr_vr_id",
 				"type": "integer",
-				"options": { "unsigned": true, "notnull": true }
+				"options": { "unsigned": true, "notnull": false }
 			},
 			{
 				"name": "w8y_sr_mw_version",
@@ -102,7 +104,28 @@
 				"options": { "length": 65530, "notnull": false }
 			}
 		],
-		"indexes": [],
+		"indexes": [
+			{
+				"name": "w8y_sr_page_id_by_timestamp",
+				"columns": [ "w8y_sr_page_id", "w8y_sr_timestamp" ],
+				"unique": false
+			},
+			{
+				"name": "w8y_sr_mw_version",
+				"columns": [ "w8y_sr_sr_id", "w8y_sr_mw_version" ],
+				"unique": false
+			},
+			{
+				"name": "w8y_sr_db_version",
+				"columns": [ "w8y_sr_sr_id", "w8y_sr_db_version" ],
+				"unique": false
+			},
+			{
+				"name": "w8y_sr_php_version",
+				"columns": [ "w8y_sr_sr_id", "w8y_sr_php_version" ],
+				"unique": false
+			}
+		],
 		"pk": [
 			"w8y_sr_sr_id"
 		]
@@ -122,61 +145,121 @@
 		]
 	},
 	{
-		"name": "w8y_skins",
+		"name": "w8y_skin_links",
 		"columns": [
 			{
-				"name": "w8y_sk_vr_id",
+				"name": "w8y_sl_vr_id",
 				"type": "integer",
 				"options": { "unsigned": true, "notnull": true }
 			},
 			{
-				"name": "w8y_sk_name",
-				"type": "string",
-				"options": { "notnull": true }
-			},
-			{
-				"name": "w8y_sk_version",
-				"type": "string",
-				"options": { "notnull": false }
-			},
-			{
-				"name": "w8y_sk_doc_url",
-				"type": "string",
-				"options": { "notnull": false }
+				"name": "w8y_sl_sd_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
 			}
 		],
 		"indexes": [],
 		"pk": [
-			"w8y_sk_vr_id", "w8y_sk_name"
+			"w8y_sl_vr_id", "w8y_sl_sd_id"
 		]
 	},
 	{
-		"name": "w8y_extensions",
+		"name": "w8y_skin_data",
 		"columns": [
 			{
-				"name": "w8y_ex_vr_id",
+				"name": "w8y_sd_sd_id",
 				"type": "integer",
-				"options": { "unsigned": true, "notnull": true }
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
 			},
 			{
-				"name": "w8y_ex_name",
+				"name": "w8y_sd_name",
 				"type": "string",
 				"options": { "notnull": true }
 			},
 			{
-				"name": "w8y_ex_version",
+				"name": "w8y_sd_version",
 				"type": "string",
 				"options": { "notnull": false }
 			},
 			{
-				"name": "w8y_ex_doc_url",
+				"name": "w8y_sd_doc_url",
 				"type": "string",
 				"options": { "notnull": false }
 			}
 		],
+		"indexes": [
+			{
+				"name": "w8y_sd",
+				"columns": [ "w8y_sd_name", "w8y_sd_version", "w8y_sd_doc_url" ],
+				"unique": true
+			},
+			{
+				"name": "w8y_sd_name",
+				"columns": [ "w8y_sd_name" ],
+				"unique": false
+			}
+		],
+		"pk": [
+			"w8y_sd_sd_id"
+		]
+	},
+	{
+		"name": "w8y_extension_links",
+		"columns": [
+			{
+				"name": "w8y_el_vr_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "w8y_el_ed_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			}
+		],
 		"indexes": [],
 		"pk": [
-			"w8y_ex_vr_id", "w8y_ex_name"
+			"w8y_el_vr_id", "w8y_el_ed_id"
+		]
+	},
+	{
+		"name": "w8y_extension_data",
+		"columns": [
+			{
+				"name": "w8y_ed_ed_id",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "w8y_ed_name",
+				"type": "string",
+				"options": { "notnull": true }
+			},
+			{
+				"name": "w8y_ed_version",
+				"type": "string",
+				"options": { "notnull": false }
+			},
+			{
+				"name": "w8y_ed_doc_url",
+				"type": "string",
+				"options": { "notnull": false }
+			}
+		],
+		"indexes": [
+			{
+				"name": "w8y_ed",
+				"columns": [ "w8y_ed_name", "w8y_ed_version", "w8y_ed_doc_url" ],
+				"unique": true
+			},
+			{
+				"name": "w8y_ed_name",
+				"columns": [ "w8y_ed_name" ],
+				"unique": false
+			}
+		],
+		"pk": [
+			"w8y_ed_ed_id"
 		]
 	},
 	{

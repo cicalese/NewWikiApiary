@@ -10,6 +10,8 @@ CREATE TABLE w8y_wikis (
   PRIMARY KEY(w8y_wi_page_id)
 );
 
+CREATE INDEX w8y_wi_last_sr_id ON w8y_wikis (w8y_wi_last_sr_id);
+
 
 CREATE TABLE w8y_scrape_records (
   w8y_sr_sr_id SERIAL NOT NULL,
@@ -17,7 +19,7 @@ CREATE TABLE w8y_scrape_records (
   w8y_sr_api_url VARCHAR(255) NOT NULL,
   w8y_sr_timestamp INT NOT NULL,
   w8y_sr_is_alive BOOLEAN NOT NULL,
-  w8y_sr_vr_id INT NOT NULL,
+  w8y_sr_vr_id INT DEFAULT NULL,
   w8y_sr_mw_version VARCHAR(255) DEFAULT NULL,
   w8y_sr_db_version VARCHAR(255) DEFAULT NULL,
   w8y_sr_php_version VARCHAR(255) DEFAULT NULL,
@@ -29,6 +31,18 @@ CREATE TABLE w8y_scrape_records (
   PRIMARY KEY(w8y_sr_sr_id)
 );
 
+CREATE INDEX w8y_sr_page_id_by_timestamp ON w8y_scrape_records (
+  w8y_sr_page_id, w8y_sr_timestamp
+);
+
+CREATE INDEX w8y_sr_mw_version ON w8y_scrape_records (w8y_sr_sr_id, w8y_sr_mw_version);
+
+CREATE INDEX w8y_sr_db_version ON w8y_scrape_records (w8y_sr_sr_id, w8y_sr_db_version);
+
+CREATE INDEX w8y_sr_php_version ON w8y_scrape_records (
+  w8y_sr_sr_id, w8y_sr_php_version
+);
+
 
 CREATE TABLE w8y_version_records (
   w8y_vr_vr_id SERIAL NOT NULL,
@@ -36,22 +50,48 @@ CREATE TABLE w8y_version_records (
 );
 
 
-CREATE TABLE w8y_skins (
-  w8y_sk_vr_id INT NOT NULL,
-  w8y_sk_name VARCHAR(255) NOT NULL,
-  w8y_sk_version VARCHAR(255) DEFAULT NULL,
-  w8y_sk_doc_url VARCHAR(255) DEFAULT NULL,
-  PRIMARY KEY(w8y_sk_vr_id, w8y_sk_name)
+CREATE TABLE w8y_skin_links (
+  w8y_sl_vr_id INT NOT NULL,
+  w8y_sl_sd_id INT NOT NULL,
+  PRIMARY KEY(w8y_sl_vr_id, w8y_sl_sd_id)
 );
 
 
-CREATE TABLE w8y_extensions (
-  w8y_ex_vr_id INT NOT NULL,
-  w8y_ex_name VARCHAR(255) NOT NULL,
-  w8y_ex_version VARCHAR(255) DEFAULT NULL,
-  w8y_ex_doc_url VARCHAR(255) DEFAULT NULL,
-  PRIMARY KEY(w8y_ex_vr_id, w8y_ex_name)
+CREATE TABLE w8y_skin_data (
+  w8y_sd_sd_id SERIAL NOT NULL,
+  w8y_sd_name VARCHAR(255) NOT NULL,
+  w8y_sd_version VARCHAR(255) DEFAULT NULL,
+  w8y_sd_doc_url VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY(w8y_sd_sd_id)
 );
+
+CREATE UNIQUE INDEX w8y_sd ON w8y_skin_data (
+  w8y_sd_name, w8y_sd_version, w8y_sd_doc_url
+);
+
+CREATE INDEX w8y_sd_name ON w8y_skin_data (w8y_sd_name);
+
+
+CREATE TABLE w8y_extension_links (
+  w8y_el_vr_id INT NOT NULL,
+  w8y_el_ed_id INT NOT NULL,
+  PRIMARY KEY(w8y_el_vr_id, w8y_el_ed_id)
+);
+
+
+CREATE TABLE w8y_extension_data (
+  w8y_ed_ed_id SERIAL NOT NULL,
+  w8y_ed_name VARCHAR(255) NOT NULL,
+  w8y_ed_version VARCHAR(255) DEFAULT NULL,
+  w8y_ed_doc_url VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY(w8y_ed_ed_id)
+);
+
+CREATE UNIQUE INDEX w8y_ed ON w8y_extension_data (
+  w8y_ed_name, w8y_ed_version, w8y_ed_doc_url
+);
+
+CREATE INDEX w8y_ed_name ON w8y_extension_data (w8y_ed_name);
 
 
 CREATE TABLE w8y_log (
