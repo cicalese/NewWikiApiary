@@ -27,7 +27,7 @@ def get_sitename(apiurl, args, errors, session):
 	]
 	try:
 		response = requests.get(apiurl + '?' + '&'.join(query))
-		if response.status_code == 200:
+		if response.status_code >= 200 and response.status_code < 300:
 			response.encoding = 'utf-8-sig'
 			data = response.json()
 			if 'query' in data:
