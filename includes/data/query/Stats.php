@@ -61,6 +61,24 @@ class Stats {
 	 * @return array
 	 */
 	private function getTopExtensions( int $limit, DBConnRef $dbr ): array {
+		/*
+		 * SELECT
+    w8y_wikis.w8y_wi_page_id,
+    w8y_extensions.*,
+    COUNT(
+        DISTINCT w8y_extensions.w8y_ex_name
+    ) AS count
+FROM
+    `w8y_wikis`
+INNER JOIN w8y_scrape_records ON w8y_wi_last_sr_id = w8y_scrape_records.w8y_sr_sr_id
+INNER JOIN w8y_extensions ON w8y_scrape_records.w8y_sr_vr_id = w8y_extensions.w8y_ex_vr_id
+GROUP BY
+    w8y_extensions.w8y_ex_name
+ORDER BY
+    COUNT
+DESC
+    ;
+		 */
 		$select = [ '*',
 			'count' => 'count(*)' ];
 		$from = Structure::DBTABLE_EXTENSIONS;

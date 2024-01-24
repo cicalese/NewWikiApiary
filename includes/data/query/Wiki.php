@@ -29,17 +29,19 @@ class Wiki {
 	}
 
 	/**
-	 * @param int $scrapeId
+	 * @param int $versionId
 	 * @param DBConnRef $dbr
 	 *
 	 * @return array
 	 */
 	private function getExtensions( int $versionId, DBConnRef $dbr ): array {
 		$select = [ '*' ];
-		$from = Structure::DBTABLE_EXTENSIONS;
-		$where = [ Structure::EXTENSION_VERSION_ID => $versionId ];
-		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->
-		where( $where )->caller( __METHOD__ )->fetchResultSet();
+		$from = Structure::DBTABLE_EXTENSIONS_LINK;
+		$where = [ Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_VID => $versionId ];
+		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->join( Structure::DBTABLE_EXTENSIONS,
+			null,
+			Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_ID . ' = ' . Structure::DBTABLE_EXTENSIONS . '.' . Structure::EXTENSION_ID )
+			->where( $where )->caller( __METHOD__ )->fetchResultSet();
 
 		$ret = [];
 		$t = 0;
@@ -55,17 +57,19 @@ class Wiki {
 	}
 
 	/**
-	 * @param int $scrapeId
+	 * @param int $versionId
 	 * @param DBConnRef $dbr
 	 *
 	 * @return array
 	 */
 	private function getSkins( int $versionId, DBConnRef $dbr ): array {
 		$select = [ '*' ];
-		$from = Structure::DBTABLE_SKINS;
-		$where = [ Structure::SKIN_VERSION_ID => $versionId ];
-		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->
-		where( $where )->caller( __METHOD__ )->fetchResultSet();
+		$from = Structure::DBTABLE_SKINS_LINK;
+		$where = [ Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_VID => $versionId ];
+		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->join( Structure::DBTABLE_SKINS,
+			null,
+			Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_ID . ' = ' . Structure::DBTABLE_SKINS . '.' . Structure::SKIN_ID )
+			->where( $where )->caller( __METHOD__ )->fetchResultSet();
 
 		$ret = [];
 		$t = 0;
@@ -73,12 +77,13 @@ class Wiki {
 			while ( $row = $res->fetchRow() ) {
 				foreach ( $this->structure->returnTableColumns( Structure::DBTABLE_SKINS ) as $tName ) {
 					$ret[$t][$tName] = $row[$tName];
-					$t++;
 				}
+				$t++;
 			}
 		}
 		return $ret;
 	}
+
 
 	/**
 	 * @param int $pageId
@@ -136,8 +141,7 @@ class Wiki {
 		}
 		$result['wiki']['pageTitle'] = Utils::getPageTitleFromID( $pageID );
 		$result['extensions'] = $this->getExtensions( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
-		$result['skins'] = $this->getSkins( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
-
+		//$result['skins'] = $this->getSkins( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
 		return match ( $export ) {
 			"table" => Utils::renderTable( $result,
 				'Results for ' . $result['wiki']['pageTitle'] . ' ( pageID: ' . $pageID . ' )' ),

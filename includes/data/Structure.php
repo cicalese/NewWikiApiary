@@ -18,16 +18,22 @@ class Structure {
 	private array $dbStructure;
 
 	public const DBTABLE_WIKIS = 'w8y_wikis';
-	public const DBTABLE_EXTENSIONS = 'w8y_extensions';
-	public const DBTABLE_SKINS = 'w8y_skins';
+	public const DBTABLE_EXTENSIONS = 'w8y_extension_data';
+	public const DBTABLE_EXTENSIONS_LINK = 'w8y_extension_links';
+	public const DBTABLE_SKINS = 'w8y_skin_data';
+	public const DBTABLE_SKINS_LINK = 'w8y_skin_links';
 	public const DBTABLE_SCRAPE = 'w8y_scrape_records';
 	public const WIKI_PAGEID = 'w8y_wi_page_id';
 	public const WIKI_DEFUNCT = 'w8y_wi_is_defunct';
 	public const WIKI_LAST_SR_RCRD = 'w8y_wi_last_sr_id';
 	public const SR_ID = 'w8y_sr_sr_id';
 	public const SCRAPE_VR_ID = 'w8y_sr_vr_id';
-	public const EXTENSION_VERSION_ID = 'w8y_ex_vr_id';
-	public const SKIN_VERSION_ID = 'w8y_sk_vr_id';
+	public const EXTENSION_ID = 'w8y_ed_ed_id';
+	public const EXTENSION_LINK_VID = 'w8y_el_vr_id';
+	public const EXTENSION_LINK_ID = 'w8y_el_ed_id';
+	public const SKIN_LINK_VID = 'w8y_sl_vr_id';
+	public const SKIN_LINK_ID = 'w8y_sl_sd_id';
+	public const SKIN_ID = 'w8y_sd_sd_id';
 	public const SCRAPE_MEDIAWIKI_VERSION = 'w8y_sr_mw_version';
 
 	/**
