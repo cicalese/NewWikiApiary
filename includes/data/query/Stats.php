@@ -121,6 +121,42 @@ ORDER BY count DESC;
 	}
 
 	/**
+	 * @param int $limit
+	 * @param DBConnRef $dbr
+	 *
+	 * @return array
+	 */
+	private function getTopExtensions2( int $limit, DBConnRef $dbr ): array {
+
+		$select = [ Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_ID ];
+		$from = Structure::DBTABLE_WIKIS;
+		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->
+		leftJoin( Structure::DBTABLE_SCRAPE,
+			null,
+			Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . '=' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
+		leftJoin( Structure::DBTABLE_EXTENSIONS_LINK,
+			null,
+			Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_VID )->
+		caller( __METHOD__ )->fetchResultSet();
+		$ids = [];
+		if ( $res->numRows() > 0 ) {
+			while ( $row = $res->fetchRow() ) {
+				$ids[] = $row[ Structure::EXTENSION_LINK_ID ];
+			}
+		}
+		//var_dump ( $ids );
+		$nRes = [];
+		$counter = array_count_values( $ids );
+		$t=0;
+		foreach ( $counter as $k => $v ) {
+			$nRes[$t]['k'] = $k;
+			$nRes[$t]['v'] = $v;
+			$t++;
+		}
+		return $nRes;
+	}
+
+	/**
 	 * @param string $action
 	 * @param int $limit
 	 * @param string $export
@@ -134,6 +170,10 @@ ORDER BY count DESC;
 		switch ( $action ) {
 			case "extensions":
 				$result = $this->getTopExtensions( $limit,
+					$dbr );
+				break;
+			case "extensions2":
+				$result = $this->getTopExtensions2( $limit,
 					$dbr );
 				break;
 			case "skins":
@@ -150,6 +190,12 @@ ORDER BY count DESC;
 						 'Top ' . $limit . ' used extensions',
 						 array_merge( $tables,
 							 $this->structure->returnTableColumns( Structure::DBTABLE_EXTENSIONS ) ),
+						 true );
+				 }
+				 if ( $action === "extensions2" ) {
+					 return Utils::renderTable( $result,
+						 'Top ' . $limit . ' used extensions',
+						 [ 'id', 'hits' ],
 						 true );
 				 }
 				 if ( $action === "skins" ) {
