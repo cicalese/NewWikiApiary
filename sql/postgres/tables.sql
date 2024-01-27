@@ -31,6 +31,8 @@ CREATE TABLE w8y_scrape_records (
   PRIMARY KEY(w8y_sr_sr_id)
 );
 
+CREATE INDEX w8y_sr_vr_id ON w8y_scrape_records (w8y_sr_vr_id);
+
 CREATE INDEX w8y_sr_page_id_by_timestamp ON w8y_scrape_records (
   w8y_sr_page_id, w8y_sr_timestamp
 );
@@ -56,6 +58,10 @@ CREATE TABLE w8y_skin_links (
   PRIMARY KEY(w8y_sl_vr_id, w8y_sl_sd_id)
 );
 
+CREATE INDEX w8y_sl_vr_id ON w8y_skin_links (w8y_sl_vr_id);
+
+CREATE INDEX w8y_sl_sd_id ON w8y_skin_links (w8y_sl_sd_id);
+
 
 CREATE TABLE w8y_skin_data (
   w8y_sd_sd_id SERIAL NOT NULL,
@@ -77,6 +83,10 @@ CREATE TABLE w8y_extension_links (
   w8y_el_ed_id INT NOT NULL,
   PRIMARY KEY(w8y_el_vr_id, w8y_el_ed_id)
 );
+
+CREATE INDEX w8y_el_vr_id ON w8y_extension_links (w8y_el_vr_id);
+
+CREATE INDEX w8y_el_ed_id ON w8y_extension_links (w8y_el_ed_id);
 
 
 CREATE TABLE w8y_extension_data (

@@ -27,6 +27,7 @@ CREATE TABLE /*_*/w8y_scrape_records (
   w8y_sr_language VARCHAR(255) DEFAULT NULL,
   w8y_sr_general BLOB DEFAULT NULL,
   w8y_sr_statistics BLOB DEFAULT NULL,
+  INDEX w8y_sr_vr_id (w8y_sr_vr_id),
   INDEX w8y_sr_page_id_by_timestamp (
     w8y_sr_page_id, w8y_sr_timestamp
   ),
@@ -48,6 +49,8 @@ CREATE TABLE /*_*/w8y_last_version_record_id (
 CREATE TABLE /*_*/w8y_skin_links (
   w8y_sl_vr_id INT UNSIGNED NOT NULL,
   w8y_sl_sd_id INT UNSIGNED NOT NULL,
+  INDEX w8y_sl_vr_id (w8y_sl_vr_id),
+  INDEX w8y_sl_sd_id (w8y_sl_sd_id),
   PRIMARY KEY(w8y_sl_vr_id, w8y_sl_sd_id)
 ) /*$wgDBTableOptions*/;
 
@@ -68,6 +71,8 @@ CREATE TABLE /*_*/w8y_skin_data (
 CREATE TABLE /*_*/w8y_extension_links (
   w8y_el_vr_id INT UNSIGNED NOT NULL,
   w8y_el_ed_id INT UNSIGNED NOT NULL,
+  INDEX w8y_el_vr_id (w8y_el_vr_id),
+  INDEX w8y_el_ed_id (w8y_el_ed_id),
   PRIMARY KEY(w8y_el_vr_id, w8y_el_ed_id)
 ) /*$wgDBTableOptions*/;
 
