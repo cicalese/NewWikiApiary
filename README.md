@@ -52,19 +52,22 @@ The example above will get all information about wiki with pageId 9 and render e
 
 #### action=stats
 
-It takes 2 arguments : 
+It takes 3 arguments : 
 
 **for** ( either extensions or skins )
 
-**limit** ( return the top <limit> extensions )
+**limit** ( return the top <limit> extensions, default to 10 )
+
+**where** ( full where clause )
 
 Example :
 ```wikitext
 {{#w8y:action=stats
 |for=extensions
-|limit-10}}
+|limit-10
+|where=w8y_wi_api_url not like "%fandom.com/%" }}
 ```
-The example above will get the top 10 most used extensions based on installments.
+The example above will get the top 10 most used extensions, not being a fandom website, based on installments.
 
 
 

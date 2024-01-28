@@ -29,11 +29,13 @@ class Structure {
 	public const SR_ID = 'w8y_sr_sr_id';
 	public const SCRAPE_VR_ID = 'w8y_sr_vr_id';
 	public const EXTENSION_ID = 'w8y_ed_ed_id';
+	public const EXTENSION_NAME = 'w8y_ed_name';
 	public const EXTENSION_LINK_VID = 'w8y_el_vr_id';
 	public const EXTENSION_LINK_ID = 'w8y_el_ed_id';
 	public const SKIN_LINK_VID = 'w8y_sl_vr_id';
 	public const SKIN_LINK_ID = 'w8y_sl_sd_id';
 	public const SKIN_ID = 'w8y_sd_sd_id';
+	public const SKIN_NAME = 'w8y_sd_name';
 	public const SCRAPE_MEDIAWIKI_VERSION = 'w8y_sr_mw_version';
 
 	/**
@@ -63,6 +65,20 @@ class Structure {
 	 */
 	public function tableExists( string $tableName ): bool {
 		return array_key_exists( $tableName, $this->dbStructure );
+	}
+
+	/**
+	 * @param string $key
+	 * Find an i18n key, else return original
+	 *
+	 * @return string
+	 */
+	public static function w8yMessage( string $key ): string {
+		$msg = wfMessage( $key )->parse();
+		if ( str_starts_with( $msg,	'⧼' ) ) {
+			return $key;
+		}
+		return $msg;
 	}
 
 	/**

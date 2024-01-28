@@ -96,10 +96,13 @@ class Wiki {
 		$from = Structure::DBTABLE_WIKIS;
 		$where = [ Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_PAGEID => $pageId,
 			Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_DEFUNCT => 0 ];
-		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->join( Structure::DBTABLE_SCRAPE,
-			null,
-			Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . ' = ' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )
-			->where( $where )->caller( __METHOD__ )->fetchResultSet();
+		$res = $dbr->newSelectQueryBuilder()->
+		select( $select )->
+		from( $from )->
+		join( Structure::DBTABLE_SCRAPE, null, Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . ' = ' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
+		where( $where )->
+		caller( __METHOD__ )->
+		fetchResultSet();
 		$ret = [];
 		$result = [];
 		if ( $res->numRows() > 0 ) {
@@ -139,9 +142,8 @@ class Wiki {
 		if ( empty( $result ) ) {
 			return $result;
 		}
-		$result['wiki']['pageTitle'] = Utils::getPageTitleFromID( $pageID );
+		$result['wiki']['w8y_pageTitle'] = Utils::getPageTitleFromID( $pageID );
 		$result['extensions'] = $this->getExtensions( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
-		//$result['skins'] = $this->getSkins( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
 		return match ( $export ) {
 			"table" => Utils::renderTable( $result,
 				'Results for ' . $result['wiki']['pageTitle'] . ' ( pageID: ' . $pageID . ' )' ),

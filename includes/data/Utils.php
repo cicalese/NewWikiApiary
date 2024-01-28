@@ -167,11 +167,11 @@ class Utils {
 				foreach ( $tableData as $k => $v ) {
 					if ( is_array( $v ) ) {
 						foreach ( $v as $extraKey => $extraValue ) {
-							$ret .= '| ' . $extraKey . ' || ' . $extraValue . PHP_EOL;
+							$ret .= '| ' . Structure::w8yMessage( $extraKey ) . ' || ' . $extraValue . PHP_EOL;
 							$ret .= '|-' . PHP_EOL;
 						}
 					} else {
-						$ret .= '| ' . $k . ' || ' . $v . PHP_EOL;
+						$ret .= '| ' . Structure::w8yMessage( $k ) . ' || ' . $v . PHP_EOL;
 						$ret .= '|-' . PHP_EOL;
 					}
 				}

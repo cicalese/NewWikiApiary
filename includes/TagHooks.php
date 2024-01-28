@@ -76,15 +76,19 @@ class TagHooks {
 				break;
 			case "stats":
 				$type = Utils::getOptionSetting( 'for' );
+				$where = Utils::getOptionSetting( 'where' );
 				if ( $limit === null ) {
 					$limit = 10;
+				}
+				if ( $where === null ) {
+					$where = '';
 				}
 				if ( $type !== null ) {
 					$query = new Stats();
 					if ( $format === null ) {
 						$format = 'table';
 					}
-					$result = $query->doQuery( $type, $limit, $format );
+					$result = $query->doQuery( $type, $where, $limit, $format );
 					ResponseHandler::printDebugMessage( $result,
 						"sql result" );
 				}

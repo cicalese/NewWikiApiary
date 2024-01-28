@@ -56,6 +56,10 @@ class ScribuntoLuaLibrary extends \Scribunto_LuaLibraryBase {
 				if ( $limit === null ) {
 					$limit = 10;
 				}
+				$where = Utils::getOptionSetting( 'where', true, $arguments );
+				if ( $where === null ) {
+					$where = '';
+				}
 				$query = new Stats();
 				$result = $query->doQuery( $type, $limit, 'lua' );
 				return [ $this->convertToLuaTable( $result ) ];
