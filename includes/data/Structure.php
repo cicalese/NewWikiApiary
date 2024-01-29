@@ -28,6 +28,7 @@ class Structure {
 	public const WIKI_LAST_SR_RCRD = 'w8y_wi_last_sr_id';
 	public const SR_ID = 'w8y_sr_sr_id';
 	public const SCRAPE_VR_ID = 'w8y_sr_vr_id';
+	public const SCRAPE_IS_ALIVE = 'w8y_sr_is_alive';
 	public const EXTENSION_ID = 'w8y_ed_ed_id';
 	public const EXTENSION_NAME = 'w8y_ed_name';
 	public const EXTENSION_LINK_VID = 'w8y_el_vr_id';

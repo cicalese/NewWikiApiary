@@ -38,10 +38,13 @@ class Wiki {
 		$select = [ '*' ];
 		$from = Structure::DBTABLE_EXTENSIONS_LINK;
 		$where = [ Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_VID => $versionId ];
-		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->join( Structure::DBTABLE_EXTENSIONS,
-			null,
-			Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_ID . ' = ' . Structure::DBTABLE_EXTENSIONS . '.' . Structure::EXTENSION_ID )
-			->where( $where )->caller( __METHOD__ )->fetchResultSet();
+		$res = $dbr->newSelectQueryBuilder()->
+		select( $select )->
+		from( $from )->
+		join( Structure::DBTABLE_EXTENSIONS, null, Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_ID . ' = ' . Structure::DBTABLE_EXTENSIONS . '.' . Structure::EXTENSION_ID )->
+		where( $where )->
+		caller( __METHOD__ )->
+		fetchResultSet();
 
 		$ret = [];
 		$t = 0;
@@ -66,10 +69,13 @@ class Wiki {
 		$select = [ '*' ];
 		$from = Structure::DBTABLE_SKINS_LINK;
 		$where = [ Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_VID => $versionId ];
-		$res = $dbr->newSelectQueryBuilder()->select( $select )->from( $from )->join( Structure::DBTABLE_SKINS,
-			null,
-			Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_ID . ' = ' . Structure::DBTABLE_SKINS . '.' . Structure::SKIN_ID )
-			->where( $where )->caller( __METHOD__ )->fetchResultSet();
+		$res = $dbr->newSelectQueryBuilder()->
+		select( $select )->
+		from( $from )->
+		join( Structure::DBTABLE_SKINS, null,	Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_ID . ' = ' . Structure::DBTABLE_SKINS . '.' . Structure::SKIN_ID )->
+		where( $where )->
+		caller( __METHOD__ )->
+		fetchResultSet();
 
 		$ret = [];
 		$t = 0;
@@ -143,10 +149,16 @@ class Wiki {
 			return $result;
 		}
 		$result['wiki']['w8y_pageTitle'] = Utils::getPageTitleFromID( $pageID );
-		$result['extensions'] = $this->getExtensions( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
+		if ( $result['scrape'][Structure::SCRAPE_IS_ALIVE] === 0 ) {
+			$result['extensions'] = [];
+			$result['skins'] = [];
+		} else {
+			$result['extensions'] = $this->getExtensions( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
+			$result['skins'] = $this->getSkins( $result['scrape'][Structure::SCRAPE_VR_ID], $dbr );
+		}
 		return match ( $export ) {
 			"table" => Utils::renderTable( $result,
-				'Results for ' . $result['wiki']['pageTitle'] . ' ( pageID: ' . $pageID . ' )' ),
+				'Results for ' . $result['wiki']['w8y_pageTitle'] . ' ( pageID: ' . $pageID . ' )' ),
 			"arrayfunctions" => [ Utils::exportArrayFunction( $result ), 'nowiki' => true ],
 			"lua" => $result,
 			default => "",
