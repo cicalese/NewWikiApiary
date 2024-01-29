@@ -54,9 +54,9 @@ The example above will get all information about wiki with pageId 9 and render e
 
 It takes 3 arguments : 
 
-**for** ( either extensions or skins )
+**for** ( either extensions, skins, mwversion )
 
-**limit** ( return the top <limit> extensions, default to 10 )
+**limit** ( return the top <limit>, default to 10 )
 
 **where** ( full where clause )
 

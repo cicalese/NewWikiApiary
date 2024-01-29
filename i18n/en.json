@@ -10,6 +10,7 @@
 	"w8y_not-a-valid-column" : "$1 is not a valid column in $2.",
 	"w8y_missing-page-id" : "Missing pageID",
 	"w8y_pageTitle" : "Page Title",
+	"w8y_count" : "Count",
 	"w8y_wi_page_id" : "Page ID",
 	"w8y_wi_api_url" : "API Url",
 	"w8y_wi_last_sr_id" : "Last scrape record",

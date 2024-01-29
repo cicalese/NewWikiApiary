@@ -44,9 +44,13 @@ class MediaWiki {
 		}
 		if ( isset( $explodedVersions[1] ) ) {
 			$where .= '.' . $explodedVersions[1];
+		} else {
+			$where .= '.0';
 		}
 		if ( isset( $explodedVersions[2] ) ) {
 			$where .= '.' . $explodedVersions[2];
+		} else {
+			$where .= '.0';
 		}
 		$where = [ Structure::SCRAPE_MEDIAWIKI_VERSION => $where ];
 		$select = [ Structure::SCRAPE_MEDIAWIKI_VERSION, Structure::SR_ID,
@@ -86,25 +90,16 @@ class MediaWiki {
 		$dbr = $lb->getConnectionRef( DB_REPLICA );
 		$result = [];
 
-		$tables = [ 'count' ];
+		$result = $this->getMediaWikiVersionInfo( $version, $limit, $dbr );
 
 		switch ( $export ) {
 			case "table":
-				if ( $action === "extensions" ) {
-					return Utils::renderTable( $result,
-						'Top ' . $limit . ' used extensions',
-						array_merge( $tables,
-							$this->structure->returnTableColumns( Structure::DBTABLE_EXTENSIONS ) ),
-						true );
-				}
-				if ( $action === "skins" ) {
-					return Utils::renderTable( $result,
-						'Top ' . $limit . ' used skins',
-						array_merge( $tables,
-							$this->structure->returnTableColumns( Structure::DBTABLE_SKINS ) ),
-						true );
-				}
-				break;
+				$tables = [ wfMessage( 'w8y_count' )->text(),
+					wfMessage( Structure::SCRAPE_MEDIAWIKI_VERSION )->text(),
+					wfMessage( Structure::SR_ID )->text()
+				];
+				return Utils::renderTable( $result,
+				'Top ' . $limit . ' MediaWiki Version', $tables, true );
 			case "arrayfunctions":
 				return [ Utils::exportArrayFunction( $result ), 'nowiki' => true ];
 			case "lua":

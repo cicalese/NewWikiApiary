@@ -33,35 +33,87 @@ class Stats {
 	 *
 	 * @return array
 	 */
+	private function getMediaWikiVersionInfo( int $limit, DBConnRef $dbr, string $where = ''  ): array {
+		$select = [ Structure::SCRAPE_MEDIAWIKI_VERSION,
+			'count' => 'count(*)' ];
+		$from = Structure::DBTABLE_SCRAPE;
+		try {
+			if ( $where === '' ) {
+				$res = $dbr->newSelectQueryBuilder()->
+				select( $select )->
+				from( $from )->
+				groupBy( Structure::SCRAPE_MEDIAWIKI_VERSION )->
+				orderBy( 'count', 'DESC' )->
+				limit( $limit )->caller( __METHOD__ )->
+				fetchResultSet();
+			} else {
+				$res = $dbr->newSelectQueryBuilder()->
+				select( $select )->
+				from( $from )->
+				where( $where )->
+				groupBy( Structure::SCRAPE_MEDIAWIKI_VERSION )->
+				orderBy( 'count', 'DESC' )->
+				limit( $limit )->
+				caller( __METHOD__ )->
+				fetchResultSet();
+			}
+		} catch ( \Exception $e ) {
+			wfDebug( $e->getMessage(), 'w8y' );
+			return [];
+		}
+		$ret = [];
+		$t = 0;
+		if ( $res->numRows() > 0 ) {
+			while ( $row = $res->fetchRow() ) {
+				$ret[$t]['Count'] = $row['count'];
+				$ret[$t]['version'] = $row[ Structure::SCRAPE_MEDIAWIKI_VERSION ];
+				$t++;
+			}
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * @param int $limit
+	 * @param DBConnRef $dbr
+	 * @param string $where
+	 *
+	 * @return array
+	 */
 	private function getTopSkins( int $limit, DBConnRef $dbr, string $where = '' ): array {
 		$select = [ Structure::SKIN_NAME, 'count' => 'count(*)' ];
 		$from = Structure::DBTABLE_WIKIS;
-
-		if ( $where !== '' ) {
-			$res = $dbr->newSelectQueryBuilder()->
-			select( $select )->
-			from( $from )->
-			leftJoin( Structure::DBTABLE_SCRAPE, null, Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . '=' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
-			leftJoin( Structure::DBTABLE_SKINS_LINK,	null, Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_VID )->
-			leftJoin( Structure::DBTABLE_SKINS, null, Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_ID . '=' . Structure::DBTABLE_SKINS . '.' . Structure::SKIN_ID )->
-			where( $where )->
-			groupBy( Structure::SKIN_NAME )->
-			orderBy( 'count', 'DESC' )->
-			limit( $limit )->
-			caller( __METHOD__ )->
-			fetchResultSet();
-		} else {
-			$res = $dbr->newSelectQueryBuilder()->
-			select( $select )->
-			from( $from )->
-			leftJoin( Structure::DBTABLE_SCRAPE, null, Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . '=' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
-			leftJoin( Structure::DBTABLE_SKINS_LINK,	null, Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_VID )->
-			leftJoin( Structure::DBTABLE_SKINS, null, Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_ID . '=' . Structure::DBTABLE_SKINS . '.' . Structure::SKIN_ID )->
-			groupBy( Structure::SKIN_NAME )->
-			orderBy( 'count', 'DESC' )->
-			limit( $limit )->
-			caller( __METHOD__ )->
-			fetchResultSet();
+		try {
+			if ( $where !== '' ) {
+				$res = $dbr->newSelectQueryBuilder()->
+				select( $select )->
+				from( $from )->
+				leftJoin( Structure::DBTABLE_SCRAPE, null, Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . '=' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
+				leftJoin( Structure::DBTABLE_SKINS_LINK, null, Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_VID )->
+				leftJoin( Structure::DBTABLE_SKINS, null, Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_ID . '=' . Structure::DBTABLE_SKINS . '.' . Structure::SKIN_ID )->
+				where( $where )->
+				groupBy( Structure::SKIN_NAME )->
+				orderBy( 'count', 'DESC' )->
+				limit( $limit )->
+				caller( __METHOD__ )->
+				fetchResultSet();
+			} else {
+				$res = $dbr->newSelectQueryBuilder()->
+				select( $select )->
+				from( $from )->
+				leftJoin( Structure::DBTABLE_SCRAPE, null, Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . '=' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
+				leftJoin( Structure::DBTABLE_SKINS_LINK, null, Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_VID )->
+				leftJoin( Structure::DBTABLE_SKINS, null, Structure::DBTABLE_SKINS_LINK . '.' . Structure::SKIN_LINK_ID . '=' . Structure::DBTABLE_SKINS . '.' . Structure::SKIN_ID )->
+				groupBy( Structure::SKIN_NAME )->
+				orderBy( 'count', 'DESC' )->
+				limit( $limit )->
+				caller( __METHOD__ )->
+				fetchResultSet();
+			}
+		} catch ( \Exception $e ) {
+			wfDebug( $e->getMessage(), 'w8y' );
+			return [];
 		}
 		$ret = [];
 		$t = 0;
@@ -86,32 +138,35 @@ class Stats {
 	private function getTopExtensions( int $limit, DBConnRef $dbr, string $where = '' ): array {
 		$select = [ Structure::EXTENSION_NAME, 'count' => 'count(*)' ];
 		$from = Structure::DBTABLE_WIKIS;
-
-		if ( $where !== '' ) {
-			$res = $dbr->newSelectQueryBuilder()->
-			select( $select )->
-			from( $from )->
-			leftJoin( Structure::DBTABLE_SCRAPE, null, Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . '=' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
-			leftJoin( Structure::DBTABLE_EXTENSIONS_LINK,	null, Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_VID )->
-			leftJoin( Structure::DBTABLE_EXTENSIONS, null, Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_ID . '=' . Structure::DBTABLE_EXTENSIONS . '.' . Structure::EXTENSION_ID )->
-			where( $where )->
-			groupBy( Structure::EXTENSION_NAME )->
-			orderBy( 'count', 'DESC' )->
-			limit( $limit )->
-			caller( __METHOD__ )->
-			fetchResultSet();
-		} else {
-			$res = $dbr->newSelectQueryBuilder()->
-			select( $select )->
-			from( $from )->
-			leftJoin( Structure::DBTABLE_SCRAPE, null, Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . '=' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
-			leftJoin( Structure::DBTABLE_EXTENSIONS_LINK, null, Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_VID )->
-			leftJoin( Structure::DBTABLE_EXTENSIONS, null, Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_ID . '=' . Structure::DBTABLE_EXTENSIONS . '.' . Structure::EXTENSION_ID )->
-			groupBy( Structure::EXTENSION_NAME )->
-			orderBy( 'count', 'DESC' )->
-			limit( $limit )->
-			caller( __METHOD__ )->
-			fetchResultSet();
+		try {
+			if ( $where !== '' ) {
+				$res = $dbr->newSelectQueryBuilder()->
+				select( $select )->
+				from( $from )->
+				leftJoin( Structure::DBTABLE_SCRAPE, null, Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . '=' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
+				leftJoin( Structure::DBTABLE_EXTENSIONS_LINK, null, Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_VID )->
+				leftJoin( Structure::DBTABLE_EXTENSIONS, null, Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_ID . '=' . Structure::DBTABLE_EXTENSIONS . '.' . Structure::EXTENSION_ID )->
+				where( $where )->
+				groupBy( Structure::EXTENSION_NAME )->
+				orderBy( 'count', 'DESC' )->
+				limit( $limit )->
+				caller( __METHOD__ )->
+				fetchResultSet();
+			} else {
+				$res = $dbr->newSelectQueryBuilder()->
+				select( $select )->
+				from( $from )->leftJoin( Structure::DBTABLE_SCRAPE, null, Structure::DBTABLE_WIKIS . '.' . Structure::WIKI_LAST_SR_RCRD . '=' . Structure::DBTABLE_SCRAPE . '.' . Structure::SR_ID )->
+				leftJoin( Structure::DBTABLE_EXTENSIONS_LINK, null, Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_VID )->
+				leftJoin( Structure::DBTABLE_EXTENSIONS, null, Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_ID . '=' . Structure::DBTABLE_EXTENSIONS . '.' . Structure::EXTENSION_ID )->
+				groupBy( Structure::EXTENSION_NAME )->
+				orderBy( 'count', 'DESC' )->
+				limit( $limit )->
+				caller( __METHOD__ )->
+				fetchResultSet();
+			}
+		} catch ( \Exception $e ) {
+			wfDebug( $e->getMessage(), 'w8y' );
+			return [];
 		}
 		$ret = [];
 		$t = 0;
@@ -140,15 +195,17 @@ class Stats {
 		$result = [];
 		switch ( $action ) {
 			case "extensions":
-				$result = $this->getTopExtensions( $limit,
-					$dbr, $where );
+				$result = $this->getTopExtensions( $limit, $dbr, $where );
 				break;
 			case "skins":
-				$result = $this->getTopSkins( $limit,
-					$dbr );
+				$result = $this->getTopSkins( $limit, $dbr, $where );
+				break;
+			case "mwversion":
+				$result = $this->getMediaWikiVersionInfo( $limit, $dbr, $where );
 				break;
 		}
-		$tables = [ 'count' ];
+
+		$tables = [ Structure::w8yMessage( 'w8y_count' ) ];
 
 		switch ( $export ) {
 			 case "table":
@@ -162,6 +219,12 @@ class Stats {
 					 return Utils::renderTable( $result,
 						 'Top ' . $limit . ' used skins',
 						 array_merge( $tables, [ Structure::w8yMessage( Structure::SKIN_NAME ) ] ),
+						 true );
+				 }
+				 if ( $action === "mwversion" ) {
+					 return Utils::renderTable( $result,
+						 'Top ' . $limit . ' most used MediaWiki versions',
+						 array_merge( $tables, [ Structure::w8yMessage( Structure::SCRAPE_MEDIAWIKI_VERSION ) ] ),
 						 true );
 				 }
 				 break;
