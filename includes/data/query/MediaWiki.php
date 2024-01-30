@@ -1,7 +1,7 @@
 <?php
 /**
- * Created by  : Wikibase Solutions B.V.
- * Project     : dev1-03
+ * Created by  : Open CSP
+ * Project     : WikiApiary
  * Filename    : MediaWiki.php
  * Description :
  * Date        : 15-1-2024
@@ -18,15 +18,6 @@ use Wikimedia\Rdbms\DBConnRef;
 class MediaWiki {
 
 	/**
-	 * @var Structure
-	 */
-	private Structure $structure;
-
-	public function __construct() {
-		$this->structure = new Structure();
-	}
-
-	/**
 	 * @param string $version
 	 * @param int $limit
 	 * @param DBConnRef $dbr
@@ -35,9 +26,6 @@ class MediaWiki {
 	 */
 	private function getMediaWikiVersionInfo( string $version, int $limit, DBConnRef $dbr ): array {
 		$explodedVersions = explode( '.', $version );
-		$version1 = false;
-		$version2 = false;
-		$version3 = false;
 		$where = false;
 		if ( isset( $explodedVersions[0] ) ) {
 			$where .= $explodedVersions[0];

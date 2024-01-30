@@ -2,6 +2,7 @@
 
 namespace WikiApiary\Scribunto;
 
+use WikiApiary\data\query\Extensions;
 use WikiApiary\data\query\Stats;
 use WikiApiary\data\query\Wiki;
 use WikiApiary\data\Utils;
@@ -39,6 +40,14 @@ class ScribuntoLuaLibrary extends \Scribunto_LuaLibraryBase {
 			return [];
 		}
 		switch ( $action ) {
+			case "extension":
+				$eName = Utils::getOptionSetting( 'Extension name', true, $arguments );
+				if ( $eName === null ) {
+					return [];
+				}
+				$query = new Extensions();
+				$result = $query->doQuery( $eName, 'lua' );
+				return [ $this->convertToLuaTable( $result ) ];
 			case "wiki":
 				$id = Utils::getOptionSetting( 'id', true, $arguments );
 				if ( $id === null ) {

@@ -12,6 +12,7 @@ namespace WikiApiary;
 
 use MediaWiki\MediaWikiServices;
 use Parser;
+use WikiApiary\data\query\Extensions;
 use WikiApiary\data\query\Query;
 use WikiApiary\data\query\Stats;
 use WikiApiary\data\query\Wiki;
@@ -47,6 +48,14 @@ class TagHooks {
 		$limit = Utils::getOptionSetting( 'limit' );
 		$format = Utils::getOptionSetting( 'format' );
 		switch ( $action ) {
+			case "extension":
+				$eName = Utils::getOptionSetting( 'Extension name' );
+				if ( $eName === null ) {
+					break;
+				}
+				$extension = new Extensions();
+				$result = $extension->doQuery( $eName );
+				break;
 			case "query":
 				$query = new Query();
 				$get = Utils::getOptionSetting( 'return' );

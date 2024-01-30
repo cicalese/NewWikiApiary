@@ -31,6 +31,7 @@ class Structure {
 	public const SCRAPE_IS_ALIVE = 'w8y_sr_is_alive';
 	public const EXTENSION_ID = 'w8y_ed_ed_id';
 	public const EXTENSION_NAME = 'w8y_ed_name';
+	public const EXTENSION_VERSION = 'w8y_ed_version';
 	public const EXTENSION_LINK_VID = 'w8y_el_vr_id';
 	public const EXTENSION_LINK_ID = 'w8y_el_ed_id';
 	public const SKIN_LINK_VID = 'w8y_sl_vr_id';

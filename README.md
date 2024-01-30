@@ -69,7 +69,15 @@ Example :
 ```
 The example above will get the top 10 most used extensions, not being a fandom website, based on installments.
 
+#### action=extension
 
+This return
+
+It takes two arguments : 
+
+**Extension name** tba
+
+**type** tba
 
 ## Lua
 Call are the same as for the parser functions.
