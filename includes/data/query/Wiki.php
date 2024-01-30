@@ -149,7 +149,7 @@ class Wiki {
 			return $result;
 		}
 		$result['wiki']['w8y_pageTitle'] = Utils::getPageTitleFromID( $pageID );
-		if ( $result['scrape'][Structure::SCRAPE_IS_ALIVE] === 0 ) {
+		if ( $result['scrape'][Structure::SCRAPE_IS_ALIVE] === "0" ) {
 			$result['extensions'] = [];
 			$result['skins'] = [];
 		} else {
