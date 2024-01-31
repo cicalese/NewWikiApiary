@@ -67,16 +67,23 @@ class Extensions {
 
 	/**
 	 * @param string $extensionName
+	 * @param string $queryType
 	 * @param string $export
 	 *
 	 * @return mixed
 	 */
-	public function doQuery( string $extensionName, string $export = "table" ): mixed {
+	public function doQuery( string $extensionName, string $queryType, string $export = "table" ): mixed {
 		$lb = MediaWikiServices::getInstance()->getDBLoadBalancer();
 		$dbr = $lb->getConnectionRef( DB_REPLICA );
 		$result = [];
 
-		$result = $this->getExtensionVersions( $extensionName, $dbr );
+		switch ( $queryType ) {
+			case "version":
+				$result = $this->getExtensionVersions( $extensionName, $dbr );
+				break;
+			default:
+				$result = [];
+		}
 
 		switch ( $export ) {
 			case "table":

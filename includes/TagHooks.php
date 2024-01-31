@@ -50,11 +50,12 @@ class TagHooks {
 		switch ( $action ) {
 			case "extension":
 				$eName = Utils::getOptionSetting( 'Extension name' );
-				if ( $eName === null ) {
+				$eType = Utils::getOptionSetting( 'type' );
+				if ( $eName === null || $eType === null ) {
 					break;
 				}
 				$extension = new Extensions();
-				$result = $extension->doQuery( $eName );
+				$result = $extension->doQuery( $eName, $eType );
 				break;
 			case "query":
 				$query = new Query();

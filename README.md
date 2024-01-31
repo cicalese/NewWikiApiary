@@ -75,9 +75,17 @@ This return
 
 It takes two arguments : 
 
-**Extension name** tba
+**Extension name** ( Name of the extension to query )
 
-**type** tba
+**type** ( Query type, currenly only **version** is supported )
+
+Example :
+```wikitext
+{{#w8y:action=extension
+|Extension name=ParserFunctions
+|type=version
+}}
+```
 
 ## Lua
 Call are the same as for the parser functions.
