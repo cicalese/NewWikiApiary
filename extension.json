@@ -19,6 +19,12 @@
 	"ExtensionMessagesFiles": {
 		"WikiApiaryMagic": "i18n/WikiApiary.i18n.php"
 	},
+	"AutoloadClasses": {
+		"W8yAPI": "W8yAPI.php"
+	},
+	"APIModules": {
+		"wikiapiary": "W8yAPI"
+	},
 	"AutoloadNamespaces": {
 		"WikiApiary\\": "includes/"
 	},

@@ -36,5 +36,18 @@
 	"w8y_ed_ed_id" : "Id",
 	"w8y_ed_name" : "Name",
 	"w8y_ed_version" : "Version",
-	"w8y_ed_doc_url" : "Documentation url"
+	"w8y_ed_doc_url" : "Documentation url",
+	"w8y-api-error-unknown-what-parameter" : "What parameter missing",
+	"apihelp-wikiapiary-summary": "Api functions to query WikiApiairy",
+	"apihelp-w8y-example-1": "Get information for Wiki by Page ID",
+	"apihelp-wikiapiary-param-what": "The query action",
+	"apihelp-wikiapiary-param-return": "Used with what=query. Consult the readme for information",
+	"apihelp-wikiapiary-param-from": "Used with what=query. Consult the readme for information",
+	"apihelp-wikiapiary-param-where": "Used with what=query and what=stats. Consult the readme for information",
+	"apihelp-wikiapiary-param-limit": "Limit the API results",
+	"apihelp-wikiapiary-param-output": "The format needed to return",
+	"apihelp-wikiapiary-param-pageid": "Used with what=wiki. Consult the readme for information",
+	"apihelp-wikiapiary-param-for": "Used with what=stats. Consult the readme for information",
+	"apihelp-wikiapiary-param-extension-name": "Used with what=extension. Consult the readme for information",
+	"apihelp-wikiapiary-param-type": "Used with what=extension. Consult the readme for information"
 }
