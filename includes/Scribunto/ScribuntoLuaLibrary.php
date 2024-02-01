@@ -43,11 +43,17 @@ class ScribuntoLuaLibrary extends \Scribunto_LuaLibraryBase {
 			case "extension":
 				$eName = Utils::getOptionSetting( 'Extension name', true, $arguments );
 				$eType = Utils::getOptionSetting( 'type', true, $arguments );
+				$limit = Utils::getOptionSetting( 'limit', true, $arguments );
 				if ( $eName === null || $eType === null ) {
 					return [];
 				}
+				if ( $limit === null ) {
+					$limit = 10;
+				} else {
+					$limit = intval( trim( $limit ) );
+				}
 				$query = new Extensions();
-				$result = $query->doQuery( $eName, $eType, 'lua' );
+				$result = $query->doQuery( $eName, $eType, $limit, 'lua' );
 				return [ $this->convertToLuaTable( $result ) ];
 			case "wiki":
 				$id = Utils::getOptionSetting( 'id', true, $arguments );
@@ -65,6 +71,8 @@ class ScribuntoLuaLibrary extends \Scribunto_LuaLibraryBase {
 				$limit = Utils::getOptionSetting( 'limit', true, $arguments );
 				if ( $limit === null ) {
 					$limit = 10;
+				} else {
+					$limit = intval( trim( $limit ) );
 				}
 				$where = Utils::getOptionSetting( 'where', true, $arguments );
 				if ( $where === null ) {

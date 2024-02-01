@@ -117,11 +117,12 @@ class Extensions {
 
 	/**
 	 * @param string $extensionName
+	 * @param int $limit
 	 * @param DBConnRef $dbr
 	 *
 	 * @return array
 	 */
-	private function getExtensionWiki( string $extensionName, DBConnRef $dbr ) {
+	private function getExtensionWiki( string $extensionName, int $limit, DBConnRef $dbr ) {
 		$select = [ Structure::WIKI_PAGEID ];
 		$from = Structure::DBTABLE_WIKIS;
 		$where = Structure::EXTENSION_NAME . ' LIKE "' . $extensionName . '"';
@@ -139,6 +140,7 @@ class Extensions {
 			leftJoin( Structure::DBTABLE_EXTENSIONS_LINK, null, Structure::DBTABLE_SCRAPE . '.' . Structure::SCRAPE_VR_ID . '=' . Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_VID )->
 			leftJoin( Structure::DBTABLE_EXTENSIONS, null, Structure::DBTABLE_EXTENSIONS_LINK . '.' . Structure::EXTENSION_LINK_ID . '=' . Structure::DBTABLE_EXTENSIONS . '.' . Structure::EXTENSION_ID )->
 			where( $where )->
+			limit( $limit )->
 			caller( __METHOD__ )->
 			fetchResultSet();
 		} catch ( \Exception $e ) {
@@ -174,11 +176,12 @@ class Extensions {
 	/**
 	 * @param string $extensionName
 	 * @param string $queryType
+	 * @param int $limit
 	 * @param string $export
 	 *
 	 * @return mixed
 	 */
-	public function doQuery( string $extensionName, string $queryType, string $export = "table" ): mixed {
+	public function doQuery( string $extensionName, string $queryType, int $limit, string $export = "table" ): mixed {
 		$lb = MediaWikiServices::getInstance()->getDBLoadBalancer();
 		$dbr = $lb->getConnectionRef( DB_REPLICA );
 		$result = [];
@@ -198,7 +201,7 @@ class Extensions {
 				];
 				break;
 			case "usedby":
-				$result = $this->getExtensionWiki( $extensionName, $dbr );
+				$result = $this->getExtensionWiki( $extensionName, $limit, $dbr );
 				$tables = [ Structure::w8yMessage( Structure::WIKI_PAGEID ),
 					Structure::w8yMessage( 'w8y_pageTitle' )
 				];

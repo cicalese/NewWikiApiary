@@ -79,6 +79,7 @@ It takes two arguments :
 
 **type** ( Query type, **version**, **documentation** or **usedby** )
 
+**limit** ( only used with **usedby** )
 Example :
 ```wikitext
 {{#w8y:action=extension

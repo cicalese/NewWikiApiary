@@ -51,11 +51,17 @@ class TagHooks {
 			case "extension":
 				$eName = Utils::getOptionSetting( 'Extension name' );
 				$eType = Utils::getOptionSetting( 'type' );
+				$limit = Utils::getOptionSetting( 'limit' );
 				if ( $eName === null || $eType === null ) {
 					break;
 				}
+				if ( $limit === null ) {
+					$limit = 10;
+				} else {
+					$limit = intval( trim( $limit ) );
+				}
 				$extension = new Extensions();
-				$result = $extension->doQuery( $eName, $eType );
+				$result = $extension->doQuery( $eName, $eType, $limit );
 				break;
 			case "query":
 				$query = new Query();
