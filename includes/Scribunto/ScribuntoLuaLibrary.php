@@ -42,12 +42,12 @@ class ScribuntoLuaLibrary extends \Scribunto_LuaLibraryBase {
 		switch ( $action ) {
 			case "extension":
 				$eName = Utils::getOptionSetting( 'Extension name', true, $arguments );
-				$eVersion = Utils::getOptionSetting( 'version', true, $arguments );
-				if ( $eName === null || $eVersion === null ) {
+				$eType = Utils::getOptionSetting( 'type', true, $arguments );
+				if ( $eName === null || $eType === null ) {
 					return [];
 				}
 				$query = new Extensions();
-				$result = $query->doQuery( $eName, $eVersion, 'lua' );
+				$result = $query->doQuery( $eName, $eType, 'lua' );
 				return [ $this->convertToLuaTable( $result ) ];
 			case "wiki":
 				$id = Utils::getOptionSetting( 'id', true, $arguments );

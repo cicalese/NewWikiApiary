@@ -77,7 +77,7 @@ It takes two arguments :
 
 **Extension name** ( Name of the extension to query )
 
-**type** ( Query type, currenly only **version** is supported )
+**type** ( Query type, **version** or **documentation** )
 
 Example :
 ```wikitext
