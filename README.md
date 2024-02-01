@@ -77,7 +77,7 @@ It takes two arguments :
 
 **Extension name** ( Name of the extension to query )
 
-**type** ( Query type, **version** or **documentation** )
+**type** ( Query type, **version**, **documentation** or **usedby** )
 
 Example :
 ```wikitext
