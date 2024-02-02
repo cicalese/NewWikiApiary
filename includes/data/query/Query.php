@@ -36,17 +36,12 @@ class Query {
 	 * @return mixed
 	 */
 	public function doQuery( ?string $get, ?string $from, ?string $where, ?string $limit, ?string $format ): mixed {
-		ResponseHandler::printDebugMessage( $get, "return" );
-		ResponseHandler::printDebugMessage( $from, "table" );
-		ResponseHandler::printDebugMessage( $where, "where" );
-		ResponseHandler::printDebugMessage( $limit, "limit" );
-		ResponseHandler::printDebugMessage( $format, "format" );
 		if ( $from === null ) {
 			ResponseHandler::addMessage( wfMessage( 'w8y_missing-table-argument' )->text() );
 			return "";
 		}
 		if ( !$this->structure->tableExists( $from ) ) {
-			ResponseHandler::addMessage( wfMessage( 'w8y_not-a-valid-table', $from )->text() );
+			ResponseHandler::addMessage( wfMessage( 'w8y_not-a-valid-table', $from )->parse() );
 			return "";
 		}
 		if ( $get === null ) {
@@ -87,7 +82,7 @@ class Query {
 	/**
 	 * @param string|array $select
 	 * @param string $table
-	 * @param array|null $selectWhere
+	 * @param string|array|null $selectWhere
 	 * @param int $limit
 	 * @param string $format
 	 *
@@ -96,7 +91,7 @@ class Query {
 	private function query(
 		string|array $select,
 		string $table,
-		?array $selectWhere,
+		null|string|array $selectWhere,
 		int $limit,
 		string $format
 	): mixed {
@@ -107,21 +102,28 @@ class Query {
 		if ( $selectWhere === null ) {
 			$selectWhere = '';
 		}
-		ResponseHandler::printDebugMessage( $selectWhere, '$selectWhere' );
-		ResponseHandler::printDebugMessage( $table, '$table' );
-		ResponseHandler::printDebugMessage( $select, '$select' );
-		ResponseHandler::printDebugMessage( $selectOptions, '$selectOptions' );
-		ResponseHandler::printDebugMessage( $format, '$format' );
-
 		$res = $dbr->select( $table, $select, $selectWhere, __METHOD__, $selectOptions );
 		$result = [];
+		$t = 0;
 		if ( $res->numRows() > 0 ) {
 			while ( $row = $res->fetchRow() ) {
-				$result[] = $row;
+				if ( $format === 'json' ) {
+					foreach ( $row as $k => $v ) {
+						if ( !is_int( $k ) ) {
+							$result[$t][Structure::w8yMessage( $k )] = $v;
+						}
+					}
+				} else {
+					$result[] = $row;
+				}
+				$t++;
 			}
 		}
 		if ( $format === 'csv' ) {
 			return Utils::formatCSV( $result );
+		}
+		if ( $format === 'json' ) {
+			return $result;
 		}
 
 		return $result;

@@ -118,3 +118,7 @@ You can then call the module as follows :
 ```
 
 The result will be a Lua table 
+
+## MediaWiki API
+Go to the sandbox for Wikiapiary.
+currently only "query" is supported.

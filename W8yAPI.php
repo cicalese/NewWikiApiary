@@ -1,9 +1,18 @@
 <?php
 
+use WikiApiary\data\Structure;
+use WikiApiary\data\Utils;
+use WikiApiary\TagHooks;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 
 class W8yAPI extends ApiBase {
+
+
+	/**
+	 * @var Structure
+	 */
+	private Structure $structure;
 
 	/**
 	 * @param mixed $failure
@@ -34,40 +43,53 @@ class W8yAPI extends ApiBase {
 		return $ret;
 	}
 
+	/**
+	 * @param array $params
+	 *
+	 * @return array
+	 */
+	private function convertParams( array $params ): array {
+		if ( isset( $params['extension-name'] ) ) {
+			$params['Extension name'] = $params['extension-name'];
+			unset( $params['extension-name'] );
+		}
+		if ( isset( $params['output'] ) ) {
+			$params['format'] = $params['output'];
+			unset( $params['output'] );
+		}
+		if ( isset( $params['pageid'] ) ) {
+			$params['pageId'] = $params['pageid'];
+			unset( $params['pageid'] );
+		}
+		if ( isset( $params['what'] ) ) {
+			$params['action'] = $params['what'];
+			unset( $params['what'] );
+		}
+		return $params;
+	}
+
 	public function execute() {
 		$params = $this->extractRequestParams();
-		$action = $params['what'];
+		$this->structure = new Structure();
+		$params = $this->convertParams( $params );
+		$action = $params['action'];
 		$output = '';
 		if ( !$action || $action === null ) {
 			$this->returnFailure( $this->msg( 'w8y-api-error-unknown-what-parameter' ) );
 		} else {
 			switch ( $action ) {
 				case "query":
-					$output = "gelukt!";
-					/*
-					if ( !empty( $params['data'] ) ) {
-						$ai = new \WSai\QueryAi();
-						$output = $ai->ask( $params['data'] );
-						if ( $output === false ) {
-							$this->returnFailure( wfMessage( 'wsai-error-general', "cannot contact Open API" )->params() );
-							break;
-						}
-					} else {
-						$this->returnFailure( wfMessage( 'wsai-api-error-unknown-2nd-parameter' ) );
-						break;
-					}*/
-					break;
 				case "wiki":
-					$output = "gelukt!";
-					break;
 				case "stats":
-					$output = "gelukt!";
-					break;
 				case "extension":
-					$output = "gelukt!";
+				$result = TagHooks::handleIt( $params );
+				if ( $result['status'] === 'error' ) {
+					$this->returnFailure( $result['data'] );
+				}
+				$output = $result['data'];
 					break;
-				default :
-					$this->returnFailure( $this->msg( 'w8y-api-error-unknown-what-parameter' )  );
+				default:
+					$this->returnFailure( $this->msg( 'w8y-api-error-unknown-what-parameter' ) );
 					break;
 			}
 		}
@@ -119,6 +141,7 @@ class W8yAPI extends ApiBase {
 			],
 			'output' => [
 				ParamValidator::PARAM_TYPE => [ 'csv', 'table', 'json' ],
+				ParamValidator::PARAM_DEFAULT => 'json',
 				ParamValidator::PARAM_REQUIRED => false
 			],
 			'pageid' => [
@@ -146,7 +169,7 @@ class W8yAPI extends ApiBase {
 	 */
 	protected function getExamplesMessages(): array {
 		return [
-			'action=wikiapiary&what=wiki&pageId=4' => 'apihelp-w8y-example-1'
+			'action=wikiapiary&what=wiki&pageid=4' => 'apihelp-w8y-example-1'
 		];
 	}
 

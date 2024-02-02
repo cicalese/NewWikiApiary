@@ -206,7 +206,6 @@ class Stats {
 		}
 
 		$tables = [ Structure::w8yMessage( 'w8y_count' ) ];
-
 		switch ( $export ) {
 			 case "table":
 				 if ( $action === "extensions" ) {
@@ -231,6 +230,7 @@ class Stats {
 				case "arrayfunctions":
 					return [ Utils::exportArrayFunction( $result ), 'nowiki' => true ];
 			case "lua":
+			case "json":
 				return $result;
 			default:
 				return "";

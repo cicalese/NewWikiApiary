@@ -27,6 +27,84 @@ class TagHooks {
 	private array $parameters;
 
 	/**
+	 * @param array $parameters
+	 *
+	 * @return array|string[]
+	 */
+	public static function handleIt( array $parameters ): array {
+		$action = Utils::getOptionSetting( 'action', true, $parameters );
+		$limit = Utils::getOptionSetting( 'limit', true, $parameters );
+		$format = Utils::getOptionSetting( 'format', true, $parameters );
+		$result = '';
+		switch ( $action ) {
+			case "extension":
+				$eName = Utils::getOptionSetting( 'Extension name', true, $parameters );
+				$eType = Utils::getOptionSetting( 'type', true, $parameters );
+				$limit = Utils::getOptionSetting( 'limit', true, $parameters );
+				if ( $eName === null || $eType === null ) {
+					break;
+				}
+				if ( $limit === null ) {
+					$limit = 10;
+				} else {
+					$limit = intval( trim( $limit ) );
+				}
+				$extension = new Extensions();
+				$result = $extension->doQuery( $eName, $eType, $limit );
+				break;
+			case "query":
+				$query = new Query();
+				$get = Utils::getOptionSetting( 'return', true, $parameters );
+				$table = Utils::getOptionSetting( 'from', true, $parameters );
+				$where = Utils::getOptionSetting( 'where', true, $parameters );
+				$result = $query->doQuery( $get,
+					$table,
+					$where,
+					$limit,
+					$format );
+				break;
+			case "wiki":
+				$pId = Utils::getOptionSetting( 'pageId', true, $parameters );
+				if ( $pId === null ) {
+					ResponseHandler::addMessage( wfMessage( 'w8y_missing-page-id' )->text() );
+				} else {
+					$query = new Wiki();
+					if ( $format === null ) {
+						$format = 'table';
+					}
+					$result = $query->doQuery( intval( $pId ), $format );
+				}
+				break;
+			case "stats":
+				$type = Utils::getOptionSetting( 'for', true, $parameters );
+				$where = Utils::getOptionSetting( 'where', true, $parameters );
+				if ( $limit === null ) {
+					$limit = 10;
+				}
+				if ( $where === null ) {
+					$where = '';
+				}
+				if ( $type !== null ) {
+					$query = new Stats();
+					if ( $format === null ) {
+						$format = 'table';
+					}
+					$result = $query->doQuery( $type, $where, $limit, $format );
+				}
+				break;
+			case "addToDB":
+				break;
+		}
+		if ( !empty( ResponseHandler::getMessages() ) ) {
+			return [ 'status' => 'error', 'data' => ResponseHandler::getMessages() ];
+		} elseif ( is_array( $result ) && $format !== 'json' ) {
+			return [ 'status' => 'error', 'data' => "<pre>" . print_r( $result, true ) . "</pre>" ];
+		} else {
+			return [ 'status' => 'ok', 'data' => $result ];
+		}
+	}
+
+	/**
 	 * @param Parser &$parser
 	 *
 	 * @return mixed
@@ -41,85 +119,10 @@ class TagHooks {
 			DBHooks::$debug = false;
 		}
 
-		$result = '';
-		Utils::$parameters = $this->extractOptions( array_slice( func_get_args(),
-				1 ) );
-		$action = Utils::getOptionSetting( 'action' );
-		$limit = Utils::getOptionSetting( 'limit' );
-		$format = Utils::getOptionSetting( 'format' );
-		switch ( $action ) {
-			case "extension":
-				$eName = Utils::getOptionSetting( 'Extension name' );
-				$eType = Utils::getOptionSetting( 'type' );
-				$limit = Utils::getOptionSetting( 'limit' );
-				if ( $eName === null || $eType === null ) {
-					break;
-				}
-				if ( $limit === null ) {
-					$limit = 10;
-				} else {
-					$limit = intval( trim( $limit ) );
-				}
-				$extension = new Extensions();
-				$result = $extension->doQuery( $eName, $eType, $limit );
-				break;
-			case "query":
-				$query = new Query();
-				$get = Utils::getOptionSetting( 'return' );
-				$table = Utils::getOptionSetting( 'from' );
-				$where = Utils::getOptionSetting( 'where' );
-				$result = $query->doQuery( $get,
-					$table,
-					$where,
-					$limit,
-					$format );
-				ResponseHandler::printDebugMessage( $result,
-					"sql result" );
-				break;
-			case "wiki":
-				$pId = Utils::getOptionSetting( 'pageId' );
-				if ( $pId === null ) {
-					ResponseHandler::addMessage( wfMessage( 'w8y_missing-page-id' )->text() );
-				} else {
-					$query = new Wiki();
-					if ( $format === null ) {
-						$format = 'table';
-					}
-					$result = $query->doQuery( intval( $pId ), $format );
-					ResponseHandler::printDebugMessage( $result,
-						"sql result" );
-				}
-				break;
-			case "stats":
-				$type = Utils::getOptionSetting( 'for' );
-				$where = Utils::getOptionSetting( 'where' );
-				if ( $limit === null ) {
-					$limit = 10;
-				}
-				if ( $where === null ) {
-					$where = '';
-				}
-				if ( $type !== null ) {
-					$query = new Stats();
-					if ( $format === null ) {
-						$format = 'table';
-					}
-					$result = $query->doQuery( $type, $where, $limit, $format );
-					ResponseHandler::printDebugMessage( $result,
-						"sql result" );
-				}
-				break;
-			case "addToDB":
-				break;
-		}
-		if ( !empty( ResponseHandler::getMessages() ) ) {
-			return ResponseHandler::getMessages();
-		} elseif ( is_array( $result ) ) {
-			return "<pre>" . print_r( $result,
-					true ) . "</pre>";
-		} else {
-			return $result;
-		}
+		$parameters = $this->extractOptions( array_slice( func_get_args(), 1 ) );
+		Utils::$parameters = $parameters;
+		$result = self::handleIt( $parameters );
+		return $result['data'];
 	}
 
 	/**

@@ -50,9 +50,11 @@ class Utils {
 				$k = $itemExploded[0];
 				$v = $itemExploded[1];
 				$ret[$k] = $v;
+			} else {
+				$ret = $option;
 			}
 		} else {
-			return $option;
+			$ret = $option;
 		}
 		return $ret;
 	}

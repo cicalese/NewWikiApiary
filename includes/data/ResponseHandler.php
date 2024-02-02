@@ -10,8 +10,6 @@
 
 namespace WikiApiary\data;
 
-use WikiApiary\DBHooks;
-
 class ResponseHandler {
 
 	/**
@@ -37,18 +35,4 @@ class ResponseHandler {
 			return "";
 		}
 	}
-
-	/**
-	 * @param mixed $message
-	 * @param string $title
-	 * @return void
-	 */
-	public static function printDebugMessage( mixed $message, string $title = '' ): void {
-		if ( DBHooks::$debug ) {
-			echo "<pre>$title\n";
-			var_dump( $message );
-			echo "</pre>";
-		}
-	}
-
 }
