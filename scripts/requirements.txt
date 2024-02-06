@@ -1,5 +1,0 @@
-sqlalchemy
-pymysql
-requests
-pywikibot
-mwparserfromhell

@@ -56,44 +56,52 @@ def run():
 	good_count = 0
 	error_count = 0
 	site = pywikibot.Site()
-	with Session(engine) as session:
-		try:
-			wikis = get_wikis(session, args.new)
-			message = 'Starting scraping wikis.'
-			log_message(session, message)
-			if args.verbose:
-				print(message)
-			count = 0
-			for wiki in wikis:
-				count += 1
-				if count % 100 == 0:
-					duration = time.time() - start_time
-					message = 'Processed %d wikis in %d seconds' % (count, duration)
-					log_message(session, message)
-					if args.verbose:
-						print(message)
-				url = wiki.w8y_wi_api_url.decode('utf8')
-				page_id = wiki.w8y_wi_page_id
-				if args.verbose > 1:
-					message = f'Scraping {url}'
+	if not site.user():
+		site.login()
+	if site.user():
+		with Session(engine) as session:
+			try:
+				wikis = get_wikis(session, args.new)
+				message = 'Starting scraping wikis.'
+				log_message(session, message)
+				if args.verbose:
 					print(message)
-				(sr_id, error) = scrape_site(url, page_id, wiki.w8y_wi_last_sr_id, args, session)
-				wiki.w8y_wi_last_sr_id = sr_id
-				session.add(wiki)
-				session.commit()
-				if error:
-					error_count += 1
-				else:
-					good_count += 1
-					purge(site, session, args, page_id)
-		except KeyboardInterrupt:
-			session.rollback()
-		finally:
-			duration = time.time() - start_time
-			message = 'Completed scraping, %d complete, %d errors, %d seconds' % (good_count, error_count, duration)
-			log_message(session, message)
-			if args.verbose:
-				print(message)
+				count = 0
+				for wiki in wikis:
+					count += 1
+					if count % 100 == 0:
+						duration = time.time() - start_time
+						message = 'Processed %d wikis in %d seconds' % (count, duration)
+						log_message(session, message)
+						if args.verbose:
+							print(message)
+					url = wiki.w8y_wi_api_url.decode('utf8')
+					page_id = wiki.w8y_wi_page_id
+					if args.verbose > 1:
+						message = f'Scraping {url}'
+						print(message)
+					(sr_id, error) = scrape_site(url, page_id, wiki.w8y_wi_last_sr_id, args, session)
+					wiki.w8y_wi_last_sr_id = sr_id
+					session.add(wiki)
+					session.commit()
+					if error:
+						error_count += 1
+					else:
+						good_count += 1
+						purge(site, session, args, page_id)
+			except KeyboardInterrupt:
+				session.rollback()
+			finally:
+				duration = time.time() - start_time
+				message = 'Completed scraping, %d complete, %d errors, %d seconds' % (good_count, error_count, duration)
+				log_message(session, message)
+				if args.verbose:
+					print(message)
+	else:
+		message = 'User login failure.'
+		log_message(session, message)
+		if args.verbose:
+			print(message)
 
 
 if __name__ == '__main__':
